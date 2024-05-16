@@ -1,3 +1,4 @@
+import 'package:aaa_chat_share/core/theme.dart';
 import 'package:aaa_chat_share/features/chat/presentation/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 
@@ -10,9 +11,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home:  ChatPage(),
+    return MaterialApp(
+      theme: ThemeData(scaffoldBackgroundColor: AppColor.dark),
+      home: const ChatPage(),
     );
   }
 }
-

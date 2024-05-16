@@ -20,11 +20,12 @@ class ChatPage extends StatelessWidget {
                 child: ListView.builder(
                   itemCount: 10,
                   itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      color: Colors.amber,
-                      height: 10,
-                      width: double.infinity,
+                    return Align(
+                      alignment: Alignment.topLeft,
+                      child: MessageWidget(
+                          isMe: index % 2 == 0,
+                          content: "asdasdada dadakd adadkjad adj",
+                          date: "12:00"),
                     );
                   },
                 ),
@@ -41,12 +42,10 @@ class ChatPage extends StatelessWidget {
                 child: ListView.builder(
                   itemCount: 10,
                   itemBuilder: (context, index) {
-                    return Align(
-                      alignment: Alignment.topLeft,
-                      child: MessageWidget(
-                          content: "asdasdada dadakd adadkjad adj",
-                          date: "12:00"),
-                    );
+                    return MessageWidget(
+                        isMe: index % 2 == 0,
+                        content: "asdasdada dadakd adadkjad adj",
+                        date: "12:00");
                   },
                 ),
               )
