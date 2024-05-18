@@ -7,3 +7,4 @@ abstract class ChatState extends Equatable {
   List<Object> get props => [];
 }
 class ChatInitial extends ChatState {}
+
