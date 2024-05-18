@@ -6,3 +6,8 @@ abstract class AuthEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class AuthCreateUserEvent extends AuthEvent {
+  final String userName;
+  const AuthCreateUserEvent({required this.userName});
+}
