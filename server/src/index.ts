@@ -43,8 +43,11 @@ const upload = multer({
 app.use('/uploads', express.static('uploads'));
 
 app.post('/user', async (req, res) => {
-    const rs = await saveUser(req.body.name);
-    return res.status(201).json(rs);
+    console.log(req.body);
+    if (req.body.user_name) {
+        const rs = await saveUser(req.body.user_name);
+        return res.status(201).json(rs);
+    }
 });
 
 app.post('/upload', upload.single('file'), async (req, res) => {
