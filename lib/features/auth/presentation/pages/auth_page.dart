@@ -1,3 +1,4 @@
+import 'package:aaa_chat_share/core/snack_bar.dart';
 import 'package:aaa_chat_share/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:aaa_chat_share/features/auth/presentation/widgets/auth_success_page_widget.dart';
 import 'package:aaa_chat_share/features/chat/presentation/pages/chat_page.dart';
@@ -27,9 +28,7 @@ class AuthPage extends StatelessWidget {
           if (state is AuthSuccessState) {
             Navigator.push(context, ChatPage.router());
           } else if (state is AuthFailureState) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(SnackBar(content: Text(state.failure.message)));
+            showSnackBar(context, state.failure.message);
           }
         },
       ),

@@ -18,7 +18,7 @@ interface UserDoc extends Document {
     user_name: String,
 }
 
-interface FileDoc extends Document {
+export interface FileDoc extends Document {
     file_id: Schema.Types.ObjectId,
     file_name: String,
     file_size: Number,
