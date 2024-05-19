@@ -4,6 +4,7 @@ class FileModle extends File {
   FileModle(
       {required super.fileName,
       super.fileId,
+      super.fileLink,
       required super.fileSize,
       required super.userName});
 
@@ -12,53 +13,39 @@ class FileModle extends File {
     String? fileId,
     int? fileSize,
     String? userName,
+    String? fileLink,
   }) {
     return FileModle(
       fileName: fileName ?? this.fileName,
       fileId: fileId ?? this.fileId,
       fileSize: fileSize ?? this.fileSize,
       userName: userName ?? this.userName,
+      fileLink: fileLink ?? this.fileLink,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'fileName': fileName,
-      'fileId': fileId,
-      'fileSize': fileSize,
-      'userName': userName,
+      'file_name': fileName,
+      'file_id': fileId,
+      'file_size': fileSize,
+      'user_name': userName,
+      'file_link': fileLink,
     };
   }
 
   factory FileModle.fromMap(Map<String, dynamic> map) {
     return FileModle(
-      fileName: map['fileName'] as String,
-      fileId: map['fileId'] != null ? map['fileId'] as String : null,
-      fileSize: map['fileSize'] as int,
-      userName: map['userName'] as String,
+      fileName: map['file_name'] as String,
+      fileId: map['file_id'] != null ? map['file_id'] as String : null,
+      fileLink: map['file_link'] != null ? map['file_link'] as String : null,
+      fileSize: map['file_size'] as int,
+      userName: map['user_name'] as String,
     );
   }
 
   @override
   String toString() {
     return 'File(fileName: $fileName, fileId: $fileId, fileSize: $fileSize, userName: $userName)';
-  }
-
-  @override
-  bool operator ==(covariant File other) {
-    if (identical(this, other)) return true;
-
-    return other.fileName == fileName &&
-        other.fileId == fileId &&
-        other.fileSize == fileSize &&
-        other.userName == userName;
-  }
-
-  @override
-  int get hashCode {
-    return fileName.hashCode ^
-        fileId.hashCode ^
-        fileSize.hashCode ^
-        userName.hashCode;
   }
 }

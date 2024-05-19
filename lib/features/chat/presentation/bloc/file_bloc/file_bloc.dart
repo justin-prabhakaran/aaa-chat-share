@@ -23,7 +23,7 @@ class FileBloc extends Bloc<FileEvent, FileState> {
 
   _gileGetAllEvent(FileGetAllEvent event, Emitter<FileState> emit) async {
     final res = await _getAllFiles(NoParams());
-
+    print(res);
     res.fold(
       (failure) => emit(
         FileGetAllFailureState(

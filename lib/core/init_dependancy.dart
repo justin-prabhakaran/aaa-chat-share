@@ -43,12 +43,12 @@ void initDepends() {
     )
     ..registerFactory(
       () => GetAllFiles(
-        fileRepository: serverLocator<FileRepository>(),
+        fileRepository: serverLocator<FileRepositoryImpl>(),
       ),
     )
     ..registerFactory(
       () => FileRepositoryImpl(
-        remoteFileDataSource: serverLocator<RemoteFileDataSource>(),
+        remoteFileDataSource: serverLocator<RemoteFileDataSourceImpl>(),
       ),
     )
     ..registerFactory(
