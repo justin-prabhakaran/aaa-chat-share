@@ -1,4 +1,5 @@
 import 'package:aaa_chat_share/core/snack_bar.dart';
+import 'package:aaa_chat_share/core/theme.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/file_widget.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/message_widget.dart';
@@ -31,7 +32,19 @@ class _ChatPageState extends State<ChatPage> {
           flex: 3,
           child: Column(
             children: [
-              const Text("Files"),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                "Files",
+                style: GoogleFonts.roboto(
+                  color: Colors.white,
+                  fontSize: 19,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
               Expanded(
                 child: BlocConsumer<FileBloc, FileState>(
                   builder: (context, state) {
@@ -44,20 +57,23 @@ class _ChatPageState extends State<ChatPage> {
                       return ListView.builder(
                         itemCount: state.files.length,
                         itemBuilder: (context, index) {
-                          return Align(
-                            alignment: Alignment.topCenter,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 50),
                             child: InkWell(
                               onTap: () async {
                                 if (state.files[index].fileLink != null) {
                                   launchUrl(
-                                      Uri.parse(state.files[index].fileLink!),
-                                      mode: LaunchMode.externalApplication);
+                                    Uri.parse(state.files[index].fileLink!),
+                                    mode: LaunchMode.externalApplication,
+                                  );
                                 }
                               },
                               child: FileWidget(
-                                  fileName: state.files[index].fileName,
-                                  userName: state.files[index].userName,
-                                  fileSize: state.files[index].fileSize),
+                                fileName: state.files[index].fileName,
+                                userName: state.files[index].userName,
+                                fileSize: state.files[index].fileSize,
+                              ),
                             ),
                           );
                         },
@@ -74,6 +90,32 @@ class _ChatPageState extends State<ChatPage> {
                     }
                   },
                 ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: InkWell(
+                  child: Container(
+                    height: 50,
+                    decoration: const BoxDecoration(
+                      color: AppColor.violet,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Upload',
+                        style: GoogleFonts.roboto(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 50,
               )
             ],
           ),
@@ -82,7 +124,19 @@ class _ChatPageState extends State<ChatPage> {
           flex: 6,
           child: Column(
             children: [
-              const Text("chats"),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                "Chats",
+                style: GoogleFonts.roboto(
+                  color: Colors.white,
+                  fontSize: 19,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
               Expanded(
                 child: ListView.builder(
                   itemCount: 10,
