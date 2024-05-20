@@ -4,6 +4,5 @@ import 'package:fpdart/fpdart.dart';
 
 abstract interface class FileRepository {
   Future<Either<Failure, List<File>>> getAllFiles();
-  Future<Either<Failure, File>> getFile(String fileId);
   Future<Either<Failure, bool>> upladFile();
 }

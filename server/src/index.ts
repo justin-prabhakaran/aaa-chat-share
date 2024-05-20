@@ -9,7 +9,7 @@ import multer from 'multer';
 import path from 'path';
 
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
+
 dotenv.config()
 
 const app = express()
@@ -50,6 +50,7 @@ app.post('/user', async (req, res) => {
         return res.status(201).json(rs);
     }
 });
+
 
 app.post('/upload', upload.single('file'), async (req, res) => {
     if (req.file) {
@@ -116,10 +117,13 @@ app.get('/user', async (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    socket.on('message', (
-        message,
-    ) => {
-        console.log(message);
+    socket.on('message', ({ message, user_name, time }) => {
+
+        var data = {
+            message, user_name, time
+
+        }
+        socket.broadcast.emit('message', data);
     });
 });
 

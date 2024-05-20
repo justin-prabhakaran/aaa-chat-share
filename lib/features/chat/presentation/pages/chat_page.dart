@@ -1,5 +1,9 @@
 import 'package:aaa_chat_share/core/snack_bar.dart';
 import 'package:aaa_chat_share/core/theme.dart';
+import 'package:aaa_chat_share/features/auth/domain/entities/user_entity.dart';
+import 'package:aaa_chat_share/features/auth/presentation/widgets/auth_success_page_widget.dart';
+import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
+import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/file_widget.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/message_widget.dart';
@@ -9,8 +13,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ChatPage extends StatefulWidget {
-  static router() => MaterialPageRoute(builder: (context) => const ChatPage());
-  const ChatPage({super.key});
+  final User user;
+
+  router() => MaterialPageRoute(builder: (context) => ChatPage(user: user));
+  const ChatPage({super.key, required this.user});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -138,18 +144,60 @@ class _ChatPageState extends State<ChatPage> {
                 height: 10,
               ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return MessageWidget(
-                        isMe: index % 2 == 0,
-                        content: "asdasdada dadakd adadkjad adj",
-                        date: "12:00");
+                child: BlocConsumer<ChatBloc, ChatState>(
+                  listener: (context, state) {
+                    if (state is ChatFailureState) {
+                      showSnackBar(context, state.failure.message);
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is ChatLoadingState) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is ChatRecievedState) {
+                      return ListView.builder(
+                        itemCount: state.chat.length,
+                        itemBuilder: (context, index) {
+                          return MessageWidget(
+                              content: state.chat[index].message,
+                              date: state.chat[index].time.toIso8601String());
+                        },
+                      );
+                    }
+
+                    return Center(
+                      child: Text(
+                        "No Chats !!",
+                        style: GoogleFonts.roboto(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                    );
                   },
                 ),
               )
             ],
           ),
+        ),
+        TextField(
+          maxLines: null,
+          onSubmitted: (val) {
+            context.read<ChatBloc>().add(
+                  ChatSendMyMessage(
+                    chat: Chat(
+                        message: val.trim(),
+                        time: DateTime.now(),
+                        userName: widget.user.userName),
+                  ),
+                );
+          },
+          decoration: InputDecoration(
+              border: border(),
+              enabledBorder: border(),
+              errorBorder: border(),
+              focusedBorder: border()),
         )
       ],
     ));

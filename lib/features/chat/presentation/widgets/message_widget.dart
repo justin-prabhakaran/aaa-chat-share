@@ -10,7 +10,7 @@ class MessageWidget extends StatelessWidget {
       {super.key,
       required this.content,
       required this.date,
-      required this.isMe});
+      this.isMe = false});
 
   @override
   Widget build(BuildContext context) {

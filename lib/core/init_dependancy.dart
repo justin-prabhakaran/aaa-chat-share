@@ -1,34 +1,42 @@
+import 'dart:async';
+
 import 'package:aaa_chat_share/features/auth/data/datasources/remote_data_resoure.dart';
 import 'package:aaa_chat_share/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:aaa_chat_share/features/auth/domain/repositories/auth_repository.dart';
 import 'package:aaa_chat_share/features/auth/domain/usecases/create_user.dart';
 import 'package:aaa_chat_share/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:aaa_chat_share/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/remote_file_datasource.dart';
+import 'package:aaa_chat_share/features/chat/data/datasources/socket_api.dart';
+import 'package:aaa_chat_share/features/chat/data/models/chat_model.dart';
+import 'package:aaa_chat_share/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:aaa_chat_share/features/chat/data/repositories/file_repository_impl.dart';
-import 'package:aaa_chat_share/features/chat/domain/repositories/file_repository.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_files.dart';
+import 'package:aaa_chat_share/features/chat/domain/usecases/listen_chat.dart';
+import 'package:aaa_chat_share/features/chat/domain/usecases/send_chat.dart';
+import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-final serverLocator = GetIt.instance;
+final serviceLocator = GetIt.instance;
 
 void initDepends() {
-  serverLocator
+  serviceLocator
 
     //Auth
     ..registerLazySingleton(
       () => AuthBloc(
-        createUser: serverLocator(),
+        createUser: serviceLocator(),
       ),
     )
     ..registerFactory(
       () => CreateUser(
-        authRepository: serverLocator(),
+        authRepository: serviceLocator(),
       ),
     )
     ..registerFactory<AuthRepository>(
       () => AuthRepositoryImpl(
-        remoteDataSource: serverLocator(),
+        remoteDataSource: serviceLocator(),
       ),
     )
     ..registerFactory<RemoteDataSource>(
@@ -38,20 +46,53 @@ void initDepends() {
     //File
     ..registerLazySingleton(
       () => FileBloc(
-        getAllFiles: serverLocator(),
+        getAllFiles: serviceLocator(),
       ),
     )
     ..registerFactory(
       () => GetAllFiles(
-        fileRepository: serverLocator<FileRepositoryImpl>(),
+        fileRepository: serviceLocator<FileRepositoryImpl>(),
       ),
     )
     ..registerFactory(
       () => FileRepositoryImpl(
-        remoteFileDataSource: serverLocator<RemoteFileDataSourceImpl>(),
+        remoteFileDataSource: serviceLocator<RemoteFileDataSourceImpl>(),
       ),
     )
     ..registerFactory(
       () => RemoteFileDataSourceImpl(),
-    );
+    )
+
+    //Chat
+    ..registerLazySingleton(
+      () => ChatBloc(
+        sendChat: serviceLocator(),
+        listenChat: serviceLocator(),
+      ),
+    )
+    ..registerFactory(
+      () => SendChat(
+        chatRepository: serviceLocator<ChatRepositoryImpl>(),
+      ),
+    )
+    ..registerFactory(
+      () => ListenChat(
+        chatRepository: serviceLocator(),
+      ),
+    )
+    ..registerFactory(
+      () => ChatRepositoryImpl(
+        chatRemoteDataSource: serviceLocator<ChatRemoteDataSourceImpl>(),
+      ),
+    )
+    ..registerFactory(
+      () => ChatRemoteDataSourceImpl(
+        socketApi: serviceLocator(),
+        streamController: serviceLocator(),
+      ),
+    )
+    ..registerLazySingleton(
+      () => SocketApi(),
+    )
+    ..registerLazySingleton(() => StreamController<ChatModel>());
 }
