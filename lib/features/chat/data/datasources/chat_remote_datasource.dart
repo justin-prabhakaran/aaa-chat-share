@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:aaa_chat_share/features/chat/data/datasources/socket_api.dart';
 import 'package:aaa_chat_share/features/chat/data/models/chat_model.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 abstract interface class ChatRemoteDataSource {
   void sendChat(String message, String userName, DateTime time);
@@ -9,14 +9,18 @@ abstract interface class ChatRemoteDataSource {
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
-  final StreamController<ChatModel> _streamController;
-  final SocketApi _socketApi;
-  ChatRemoteDataSourceImpl({
-    required SocketApi socketApi,
-    required StreamController<ChatModel> streamController,
-  })  : _streamController = streamController,
-        _socketApi = socketApi {
-    _socketApi.socket.on(
+  final StreamController<ChatModel> _streamController =
+      StreamController<ChatModel>();
+  final Socket _socket;
+  ChatRemoteDataSourceImpl()
+      : _socket = io(
+          Uri.parse('http://localhostL:1234'),
+          OptionBuilder()
+              .setTransports(['websocket'])
+              .disableAutoConnect()
+              .build(),
+        ) {
+    _socket.on(
       'message',
       (data) {
         print(data);
@@ -34,7 +38,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
   @override
   void sendChat(String message, String userName, DateTime time) {
-    _socketApi.socket.emit('message', {
+    _socket.emit('message', {
       'message': message,
       'user_name': userName,
       'time': time.millisecondsSinceEpoch

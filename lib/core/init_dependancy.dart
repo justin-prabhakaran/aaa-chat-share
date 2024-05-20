@@ -7,7 +7,6 @@ import 'package:aaa_chat_share/features/auth/domain/usecases/create_user.dart';
 import 'package:aaa_chat_share/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/remote_file_datasource.dart';
-import 'package:aaa_chat_share/features/chat/data/datasources/socket_api.dart';
 import 'package:aaa_chat_share/features/chat/data/models/chat_model.dart';
 import 'package:aaa_chat_share/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:aaa_chat_share/features/chat/data/repositories/file_repository_impl.dart';
@@ -77,7 +76,7 @@ void initDepends() {
     )
     ..registerFactory(
       () => ListenChat(
-        chatRepository: serviceLocator(),
+        chatRepository: serviceLocator<ChatRepositoryImpl>(),
       ),
     )
     ..registerFactory(
@@ -86,13 +85,6 @@ void initDepends() {
       ),
     )
     ..registerFactory(
-      () => ChatRemoteDataSourceImpl(
-        socketApi: serviceLocator(),
-        streamController: serviceLocator(),
-      ),
-    )
-    ..registerLazySingleton(
-      () => SocketApi(),
-    )
-    ..registerLazySingleton(() => StreamController<ChatModel>());
+      () => ChatRemoteDataSourceImpl(),
+    );
 }
