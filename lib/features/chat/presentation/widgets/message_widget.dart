@@ -128,6 +128,7 @@ class MessageWidget extends StatelessWidget {
                 child: Text(
                   '@$userName',
                   style: GoogleFonts.roboto(
+                     fontWeight: FontWeight.w300,
                     color: Colors.white38,
                     fontSize: 15,
                   ),
@@ -136,7 +137,7 @@ class MessageWidget extends StatelessWidget {
               const SizedBox(height: 5),
               Text(
                 content,
-                style: GoogleFonts.roboto(color: Colors.white, fontSize: 19),
+                style: GoogleFonts.roboto(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w300,),
               ),
               const SizedBox(height: 5),
               Align(
@@ -144,7 +145,7 @@ class MessageWidget extends StatelessWidget {
                 child: Text(
                   DateFormat('HH:mm').format(time),
                   style:
-                      GoogleFonts.roboto(fontSize: 12, color: Colors.white38),
+                      GoogleFonts.roboto(fontSize: 12, color: Colors.white38, fontWeight: FontWeight.w300,),
                 ),
               ),
             ],

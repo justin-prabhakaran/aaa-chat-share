@@ -6,9 +6,7 @@ import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bl
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/file_widget.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/message_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,10 +22,21 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  late TextEditingController _textEditingController;
+  late FocusNode _focusNode;
   @override
   void initState() {
+    _focusNode = FocusNode();
+    _textEditingController = TextEditingController();
     context.read<FileBloc>().add(FileGetAllEvent());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _textEditingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -91,8 +100,15 @@ class _ChatPageState extends State<ChatPage> {
                                 },
                               );
                             }
-                            return const Center(
-                              child: Text("No Files found !!"),
+                            return Center(
+                              child: Text(
+                                "No Files found !!",
+                                style: GoogleFonts.roboto(
+                                  fontSize: 17,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
                             );
                           },
                           listener: (context, state) {
@@ -119,6 +135,7 @@ class _ChatPageState extends State<ChatPage> {
                                 'Upload',
                                 style: GoogleFonts.roboto(
                                   color: Colors.white,
+                                  fontWeight: FontWeight.w300,
                                   fontSize: 16,
                                 ),
                               ),
@@ -194,36 +211,111 @@ class _ChatPageState extends State<ChatPage> {
               ],
             ),
           ),
+          // Padding(
+          //   padding:
+          //       const EdgeInsets.only(bottom: 50, left: 50, right: 50, top: 10),
+          //   child: TextField(
+          //     maxLines: null,
+          //     style: GoogleFonts.roboto(
+          //       color: Colors.white,
+          //       fontWeight: FontWeight.w300,
+          //       fontSize: 16,
+          //     ),
+          //     onSubmitted: (val) {
+          //       context.read<ChatBloc>().add(
+          //             ChatSendMyMessage(
+          //               chat: Chat(
+          //                 isMe: true,
+          //                 message: val.trim(),
+          //                 time: DateTime.now(),
+          //                 userName: widget.user.userName,
+          //               ),
+          //             ),
+          //           );
+          //     },
+          //     decoration: InputDecoration(
+          //       hintStyle: GoogleFonts.roboto(
+          //           color: Colors.white,
+          //           fontSize: 16,
+          //           fontWeight: FontWeight.w300),
+          //       hintText: 'Type a message..',
+          //       border: border(),
+          //       errorBorder: border(),
+          //       enabledBorder: border(),
+          //       focusedBorder: border(),
+          //     ),
+          //   ),
+          // ),
+
           Padding(
             padding:
-                const EdgeInsets.only(bottom: 50, left: 50, right: 50, top: 10),
-            child: TextField(
-              maxLines: null,
-              onSubmitted: (val) {
-                context.read<ChatBloc>().add(
-                      ChatSendMyMessage(
-                        chat: Chat(
-                          isMe: true,
-                          message: val.trim(),
-                          time: DateTime.now(),
-                          userName: widget.user.userName,
+                const EdgeInsets.only(bottom: 20, left: 20, right: 20, top: 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      maxHeight: 150, // Constrain the max height
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    decoration: BoxDecoration(
+                      color: AppColor.darkest,
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          focusNode: _focusNode,
+                          controller: _textEditingController,
+                          maxLines: null,
+                          style: GoogleFonts.roboto(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 16,
+                          ),
+                          onSubmitted: (val) => _handleSend(),
+                          decoration: InputDecoration(
+                            hintStyle: GoogleFonts.roboto(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w300,
+                            ),
+                            hintText: 'Type a message..',
+                            border: InputBorder.none,
+                          ),
                         ),
                       ),
-                    );
-              },
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                    ),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
+                IconButton(
+                  icon: const Icon(Icons.send, color: Colors.white),
+                  onPressed: _handleSend,
                 ),
-              ),
+              ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _handleSend() {
+    final message = _textEditingController.text.trim();
+    if (message.isNotEmpty) {
+      context.read<ChatBloc>().add(
+            ChatSendMyMessage(
+              chat: Chat(
+                isMe: true,
+                message: message,
+                time: DateTime.now(),
+                userName: widget.user.userName,
+              ),
+            ),
+          );
+      _textEditingController.clear();
+      _focusNode.requestFocus();
+    }
   }
 }
