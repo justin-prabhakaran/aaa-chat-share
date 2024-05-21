@@ -32,6 +32,7 @@ class FileWidget extends StatelessWidget {
             style: GoogleFonts.roboto(
               color: Colors.white,
               fontSize: 19,
+              fontWeight: FontWeight.w400,
             ),
           ),
           Text(
@@ -39,6 +40,7 @@ class FileWidget extends StatelessWidget {
             style: GoogleFonts.roboto(
               color: Colors.white70,
               fontSize: 14,
+              fontWeight: FontWeight.w300,
             ),
           ),
           Text(
@@ -46,6 +48,7 @@ class FileWidget extends StatelessWidget {
             style: GoogleFonts.roboto(
               color: Colors.white54,
               fontSize: 12,
+              fontWeight: FontWeight.w300,
             ),
           )
         ],

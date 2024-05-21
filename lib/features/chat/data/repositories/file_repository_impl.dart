@@ -21,12 +21,6 @@ class FileRepositoryImpl implements FileRepository {
   }
 
   @override
-  Future<Either<Failure, File>> getFile(String fileId) {
-    // TODO: implement getFile
-    throw UnimplementedError();
-  }
-
-  @override
   Future<Either<Failure, bool>> upladFile() {
     // TODO: implement upladFile
     throw UnimplementedError();
