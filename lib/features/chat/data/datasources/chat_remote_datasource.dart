@@ -1,34 +1,46 @@
 import 'dart:async';
-
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:aaa_chat_share/features/chat/data/models/chat_model.dart';
-import 'package:socket_io_client/socket_io_client.dart';
 
-abstract interface class ChatRemoteDataSource {
+abstract class ChatRemoteDataSource {
   void sendChat(String message, String userName, DateTime time);
   Stream<ChatModel> listen();
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   final StreamController<ChatModel> _streamController =
-      StreamController<ChatModel>();
-  final Socket _socket;
-  ChatRemoteDataSourceImpl()
-      : _socket = io(
-          Uri.parse('http://localhostL:1234'),
-          OptionBuilder()
-              .setTransports(['websocket'])
-              .disableAutoConnect()
-              .build(),
-        ) {
-    _socket.on(
-      'message',
-      (data) {
-        print(data);
-        ChatModel chat = ChatModel.fromMap(data);
+      StreamController<ChatModel>.broadcast();
+  late final IO.Socket _socket;
 
-        _streamController.add(chat);
-      },
+  ChatRemoteDataSourceImpl() {
+    _socket = IO.io(
+      'http://localhost:1234',
+      IO.OptionBuilder()
+          .setTransports(['websocket'])
+          .disableAutoConnect()
+          .build(),
     );
+    
+    _socket.on('connect', (_) {
+      print('Connected to socket server');
+    });
+
+    _socket.on('message', (data) {
+      print(data);
+      if (data is Map<String, dynamic>) {
+        ChatModel chat = ChatModel.fromMap(data);
+        _streamController.add(chat);
+      } else {
+        print('Invalid data format: $data');
+      }
+    });
+
+    _socket.on('disconnect', (_) {
+      print('Disconnected from socket server');
+    });
+
+    // Ensure the socket attempts to connect
+    _socket.connect();
   }
 
   @override
@@ -43,5 +55,11 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       'user_name': userName,
       'time': time.millisecondsSinceEpoch
     });
+  }
+
+  // Remember to close the stream controller when done
+  void dispose() {
+    _streamController.close();
+    _socket.dispose();
   }
 }
