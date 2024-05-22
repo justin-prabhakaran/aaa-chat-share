@@ -81,7 +81,7 @@ void initDepends() {
         chatRemoteDataSource: serviceLocator<ChatRemoteDataSourceImpl>(),
       ),
     )
-    ..registerFactory(
+    ..registerLazySingleton(
       () => ChatRemoteDataSourceImpl(),
     );
 }
