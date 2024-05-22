@@ -20,7 +20,6 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .disableAutoConnect()
           .build(),
     );
-    
     _socket.on('connect', (_) {
       print('Connected to socket server');
     });
@@ -40,7 +39,9 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     });
 
     // Ensure the socket attempts to connect
-    _socket.connect();
+    if (!_socket.connected) {
+      _socket.connect();
+    }
   }
 
   @override
