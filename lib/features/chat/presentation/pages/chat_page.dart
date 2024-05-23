@@ -7,6 +7,7 @@ import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bl
 import 'package:aaa_chat_share/features/chat/presentation/widgets/file_widget.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/message_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -26,9 +27,38 @@ class _ChatPageState extends State<ChatPage> {
   late FocusNode _focusNode;
   @override
   void initState() {
-    _focusNode = FocusNode();
     _textEditingController = TextEditingController();
     context.read<FileBloc>().add(FileGetAllEvent());
+
+    _focusNode = FocusNode(
+      onKeyEvent: (node, event) {
+        final isShiftEnter = event is KeyDownEvent &&
+            event.physicalKey == PhysicalKeyboardKey.enter &&
+            HardwareKeyboard.instance.isShiftPressed;
+        if (isShiftEnter) {
+          print('Shift + enter');
+
+          final text = _textEditingController.text;
+          final selection = _textEditingController.selection;
+
+          final newtext =
+              text.replaceRange(selection.start, selection.end, '\n');
+
+          _textEditingController.value = TextEditingValue(
+              text: newtext,
+              selection: TextSelection.collapsed(offset: selection.start + 1));
+
+          return KeyEventResult.handled;
+        } else if (event is KeyDownEvent &&
+            event.physicalKey == PhysicalKeyboardKey.enter &&
+            !isShiftEnter) {
+          _handleSend();
+          print('enter only');
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+    );
     super.initState();
   }
 
@@ -265,7 +295,7 @@ class _ChatPageState extends State<ChatPage> {
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: TextField(
+                        child: TextFormField(
                           focusNode: _focusNode,
                           controller: _textEditingController,
                           maxLines: null,
@@ -274,7 +304,6 @@ class _ChatPageState extends State<ChatPage> {
                             fontWeight: FontWeight.w300,
                             fontSize: 16,
                           ),
-                          onSubmitted: (val) => _handleSend(),
                           decoration: InputDecoration(
                             hintStyle: GoogleFonts.roboto(
                               color: Colors.white,
