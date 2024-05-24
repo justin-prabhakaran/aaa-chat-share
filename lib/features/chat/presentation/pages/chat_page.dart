@@ -159,9 +159,11 @@ class _ChatPageState extends State<ChatPage> {
                           onTap: () async {
                             FilePickerResult? res =
                                 await FilePicker.platform.pickFiles();
-                            if (res != null && res.files.single.bytes != null) {
-                              Uint8List bytes = res.files.single.bytes!;
-                              String fileName = res.files.single.name;
+
+                            if (res != null && res.files.first.bytes != null) {
+                              print(res.files.first.bytes);
+                              Uint8List bytes = res.files.first.bytes!;
+                              String fileName = res.files.first.name;
                               if (context.mounted) {
                                 context.read<FileBloc>().add(
                                       FileUploadEvent(

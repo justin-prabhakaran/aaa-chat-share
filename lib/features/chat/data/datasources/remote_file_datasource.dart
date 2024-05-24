@@ -32,7 +32,8 @@ class RemoteFileDataSourceImpl implements RemoteFileDataSource {
     req.fields['user_id'] = userId;
     req.files.add(
         await http.MultipartFile.fromBytes('file', bytes, filename: fileName));
-
+    print(req.toString());
+    print(req.fields.toString());
     var res = await req.send();
     if (res.statusCode == 200) {
       return true;

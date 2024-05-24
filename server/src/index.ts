@@ -33,8 +33,10 @@ const storage = multer.diskStorage({
             const newFile = await saveFile(file.originalname, req.body.file_size, req.body.user_id); // how to return file_id to /upload
             console.log(newFile)
             callback(null, newFile.file_id + path.extname(file.originalname));
+        } else {
+            callback(new Error("params not found"), '');
         }
-        callback(new Error("params not found"), '');
+
 
     }
 });

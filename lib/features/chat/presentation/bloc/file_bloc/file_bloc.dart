@@ -56,9 +56,7 @@ class FileBloc extends Bloc<FileEvent, FileState> {
               FileFailureState(failure),
             ), (isUploaded) {
       if (isUploaded) {
-        _getAllFiles(
-          NoParams(),
-        );
+        this.add(FileGetAllEvent());
       } else {
         emit(
           FileFailureState(
