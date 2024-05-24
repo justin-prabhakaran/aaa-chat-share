@@ -10,6 +10,7 @@ import 'package:aaa_chat_share/features/chat/data/repositories/file_repository_i
 import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_files.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/listen_chat.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/send_chat.dart';
+import 'package:aaa_chat_share/features/chat/domain/usecases/upload_file.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -43,10 +44,16 @@ void initDepends() {
     ..registerLazySingleton(
       () => FileBloc(
         getAllFiles: serviceLocator(),
+        upladFile: serviceLocator(),
       ),
     )
     ..registerFactory(
       () => GetAllFiles(
+        fileRepository: serviceLocator<FileRepositoryImpl>(),
+      ),
+    )
+    ..registerFactory(
+      () => UploadFile(
         fileRepository: serviceLocator<FileRepositoryImpl>(),
       ),
     )

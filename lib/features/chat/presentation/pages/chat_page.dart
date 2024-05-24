@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/snack_bar.dart';
 import 'package:aaa_chat_share/core/theme.dart';
 import 'package:aaa_chat_share/features/auth/domain/entities/user_entity.dart';
@@ -6,6 +9,7 @@ import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bl
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/file_widget.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/message_widget.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -142,7 +146,7 @@ class _ChatPageState extends State<ChatPage> {
                             );
                           },
                           listener: (context, state) {
-                            if (state is FileGetAllFailureState) {
+                            if (state is FileFailureState) {
                               print(state.failure.message);
                               showSnackBar(context, state.failure.message);
                             }
@@ -152,6 +156,31 @@ class _ChatPageState extends State<ChatPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30),
                         child: InkWell(
+                          onTap: () async {
+                            FilePickerResult? res =
+                                await FilePicker.platform.pickFiles();
+                            if (res != null && res.files.single.bytes != null) {
+                              Uint8List bytes = res.files.single.bytes!;
+                              String fileName = res.files.single.name;
+                              if (context.mounted) {
+                                context.read<FileBloc>().add(
+                                      FileUploadEvent(
+                                          bytes: bytes,
+                                          userId: widget.user.userId,
+                                          fileName: fileName),
+                                    );
+                              }
+                            } else {
+                              if (context.mounted) {
+                                context.read<FileBloc>().add(
+                                      FileThrowErrorEvent(
+                                        failure: Failure(
+                                            "ERROR : Error While Selecting File !!"),
+                                      ),
+                                    );
+                              }
+                            }
+                          },
                           child: Container(
                             height: 50,
                             decoration: const BoxDecoration(
