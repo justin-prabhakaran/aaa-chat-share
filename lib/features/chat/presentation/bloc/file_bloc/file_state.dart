@@ -17,8 +17,8 @@ class FileGetAllSuccessState extends FileState {
   const FileGetAllSuccessState({required this.files});
 }
 
-class FileGetAllFailureState extends FileState {
+class FileFailureState extends FileState {
   final Failure failure;
 
-  const FileGetAllFailureState(this.failure);
+  const FileFailureState(this.failure);
 }

@@ -1,6 +1,9 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/remote_file_datasource.dart';
-import 'package:aaa_chat_share/features/chat/domain/entities/file.dart';
+import 'package:aaa_chat_share/features/chat/domain/entities/file.dart' as AAA;
 import 'package:aaa_chat_share/features/chat/domain/repositories/file_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -11,18 +14,23 @@ class FileRepositoryImpl implements FileRepository {
       : _remoteFileDataSource = remoteFileDataSource;
 
   @override
-  Future<Either<Failure, List<File>>> getAllFiles() async {
+  Future<Either<Failure, List<AAA.File>>> getAllFiles() async {
     try {
       final res = await _remoteFileDataSource.getAllFiles();
-      return right(res as List<File>);
+      return right(res as List<AAA.File>);
     } catch (e) {
       return left(Failure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, bool>> upladFile() {
-    // TODO: implement upladFile
-    throw UnimplementedError();
+  Future<Either<Failure, bool>> upladFile(
+      Uint8List file, String userId, String fileName) async {
+    try {
+      return right(
+          await _remoteFileDataSource.upladFile(file, userId, fileName));
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
   }
 }

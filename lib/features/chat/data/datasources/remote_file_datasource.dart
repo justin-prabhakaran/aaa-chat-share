@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:aaa_chat_share/features/chat/data/models/file_model.dart';
 import 'package:http/http.dart' as http;
 
 abstract interface class RemoteFileDataSource {
   Future<List<FileModle>> getAllFiles();
+  Future<bool> upladFile(Uint8List file, String userId, String fileName);
 }
 
 class RemoteFileDataSourceImpl implements RemoteFileDataSource {
@@ -18,5 +21,23 @@ class RemoteFileDataSourceImpl implements RemoteFileDataSource {
         jsnonList.map<FileModle>((file) => FileModle.fromMap(file)).toList();
 
     return files;
+  }
+
+  @override
+  Future<bool> upladFile(
+      Uint8List bytes, String userId, String fileName) async {
+    final url = Uri.parse('http://localhost:1234/upload');
+    var req = http.MultipartRequest('post', url);
+    req.fields['file_size'] = bytes.length.toString();
+    req.fields['user_id'] = userId;
+    req.files.add(
+        await http.MultipartFile.fromBytes('file', bytes, filename: fileName));
+    print(req.toString());
+    print(req.fields.toString());
+    var res = await req.send();
+    if (res.statusCode == 200) {
+      return true;
+    }
+    return false;
   }
 }

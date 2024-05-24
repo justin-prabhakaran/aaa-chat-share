@@ -29,11 +29,15 @@ const storage = multer.diskStorage({
         callback(null, 'uploads/');
     },
     filename: async function (req, file, callback) {
-        console.log(file)
-        console.log(req.body)
-        const newFile = await saveFile(file.originalname, req.body.file_size, req.body.user_id); // how to return file_id to /upload
-        console.log(newFile)
-        callback(null, newFile.file_id + path.extname(file.originalname));
+        if (file && req.body.user_id && req.body.file_size) {
+            const newFile = await saveFile(file.originalname, req.body.file_size, req.body.user_id); // how to return file_id to /upload
+            console.log(newFile)
+            callback(null, newFile.file_id + path.extname(file.originalname));
+        } else {
+            callback(new Error("params not found"), '');
+        }
+
+
     }
 });
 
@@ -51,7 +55,8 @@ app.post('/user', async (req, res) => {
     }
 });
 
-
+//upload.single will handle the upload file 
+//dont implement file upload again idiot
 app.post('/upload', upload.single('file'), async (req, res) => {
     if (req.file) {
         const query = {
@@ -59,12 +64,13 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         }
         const newFile = await File.findOne(query);
         console.log(newFile);
-        return res.status(200).json(newFile);
+        if (newFile)
+            return res.status(200).json();
     }
     return res.status(404).json("file Not Found !");
 });
 
-
+//gives all file 
 app.get('/upload', async (req, res) => {
 
 
