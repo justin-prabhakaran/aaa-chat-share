@@ -1,4 +1,4 @@
-import bodyParser from 'body-parser';
+import bodyParser, { json } from 'body-parser';
 import express from 'express';
 import http from 'http';
 import morgan from 'morgan';
@@ -123,13 +123,15 @@ app.get('/user', async (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    socket.on('message', ({ message, user_name, time }) => {
 
-        var data = {
-            message, user_name, time
-
+    socket.on('message', (data) => {
+        try {
+            let pdata = JSON.parse(data);
+            console.log(pdata);
+            socket.broadcast.emit('message', pdata);
+        } catch (e) {
+            console.log(e);
         }
-        socket.broadcast.emit('message', data);
     });
 });
 

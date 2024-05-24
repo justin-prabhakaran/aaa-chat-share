@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'dart:convert';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:aaa_chat_share/features/chat/data/models/chat_model.dart';
 
 abstract class ChatRemoteDataSource {
@@ -10,12 +11,12 @@ abstract class ChatRemoteDataSource {
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   final StreamController<ChatModel> _streamController =
       StreamController<ChatModel>.broadcast();
-  late final IO.Socket _socket;
+  late final io.Socket _socket;
 
   ChatRemoteDataSourceImpl() {
-    _socket = IO.io(
+    _socket = io.io(
       'http://localhost:1234',
-      IO.OptionBuilder()
+      io.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
           .build(),
@@ -51,11 +52,14 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
   @override
   void sendChat(String message, String userName, DateTime time) {
-    _socket.emit('message', {
+    Map<String, dynamic> data = {
       'message': message,
       'user_name': userName,
       'time': time.millisecondsSinceEpoch
-    });
+    };
+    var jsondata = jsonEncode(data);
+    print(jsondata);
+    _socket.emit('message', jsondata);
   }
 
   // Remember to close the stream controller when done

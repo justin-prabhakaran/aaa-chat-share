@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/snack_bar.dart';
 import 'package:aaa_chat_share/core/theme.dart';
@@ -158,10 +156,15 @@ class _ChatPageState extends State<ChatPage> {
                         child: InkWell(
                           onTap: () async {
                             FilePickerResult? res =
-                                await FilePicker.platform.pickFiles();
+                                await FilePicker.platform.pickFiles(
+                              allowMultiple: false,
+                              onFileLoading: (status) {
+                                print(status.toString());
+                              },
+                            );
 
                             if (res != null && res.files.first.bytes != null) {
-                              print(res.files.first.bytes);
+                              // print(res.files.first.bytes);
                               Uint8List bytes = res.files.first.bytes!;
                               String fileName = res.files.first.name;
                               if (context.mounted) {

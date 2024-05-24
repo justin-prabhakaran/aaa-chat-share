@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+
 import 'dart:typed_data';
 
 import 'package:aaa_chat_share/features/chat/data/models/file_model.dart';
@@ -30,8 +30,8 @@ class RemoteFileDataSourceImpl implements RemoteFileDataSource {
     var req = http.MultipartRequest('post', url);
     req.fields['file_size'] = bytes.length.toString();
     req.fields['user_id'] = userId;
-    req.files.add(
-        await http.MultipartFile.fromBytes('file', bytes, filename: fileName));
+    req.files
+        .add(http.MultipartFile.fromBytes('file', bytes, filename: fileName));
     print(req.toString());
     print(req.fields.toString());
     var res = await req.send();
