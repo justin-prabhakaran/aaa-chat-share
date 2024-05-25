@@ -1,4 +1,4 @@
-import bodyParser from 'body-parser';
+import bodyParser, { json } from 'body-parser';
 import express from 'express';
 import http from 'http';
 import morgan from 'morgan';
@@ -49,11 +49,43 @@ app.use('/uploads', express.static('uploads'));
 
 app.post('/user', async (req, res) => {
     console.log(req.body);
-    if (req.body.user_name) {
-        const rs = await saveUser(req.body.user_name);
-        return res.status(201).json(rs);
+    const { user_name } = req.body;
+
+    if (user_name) {
+        try {
+            const rs = await saveUser(user_name); 
+            return res.status(201).json(rs);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+    } else {
+        return res.status(400).json({ error: 'Missing user_name' });
     }
 });
+
+
+app.get('/user', async (req, res) => {
+    const userId = req.query.user_id;
+    if (userId) {
+        try {
+            const result = await User.findById(userId); 
+            if (result) {
+                console.log(result);
+                return res.status(200).json(result);
+            } else {
+                return res.status(404).json({ error: 'User not found' });
+            }
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+    } else {
+        return res.status(400).json({ error: 'Missing user_id' });
+    }
+});
+
+
 
 //upload.single will handle the upload file 
 //dont implement file upload again idiot
@@ -115,21 +147,18 @@ app.get('/upload', async (req, res) => {
 
 });
 
-app.get('/user', async (req, res) => {
-    if (req.body.user_id) {
-        const result = await User.findById(req.body.user_id);
-        return res.status(200).json(result);
-    }
-});
+
 
 io.on('connection', (socket) => {
-    socket.on('message', ({ message, user_name, time }) => {
 
-        var data = {
-            message, user_name, time
-
+    socket.on('message', (data) => {
+        try {
+            let pdata = JSON.parse(data);
+            console.log(pdata);
+            socket.broadcast.emit('message', pdata);
+        } catch (e) {
+            console.log(e);
         }
-        socket.broadcast.emit('message', data);
     });
 });
 

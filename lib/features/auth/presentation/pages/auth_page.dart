@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AuthPage extends StatelessWidget {
   final TextEditingController _textEditingController = TextEditingController();
 
-  static router() => MaterialPageRoute(builder: (context) => AuthPage());
+  static get router => MaterialPageRoute(builder: (context) => AuthPage());
   AuthPage({super.key});
 
   @override
@@ -26,11 +26,8 @@ class AuthPage extends StatelessWidget {
         },
         listener: (BuildContext context, state) {
           if (state is AuthSuccessState) {
-            Navigator.push(
-                context,
-                ChatPage(
-                  user: state.user,
-                ).router());
+            Navigator.pushAndRemoveUntil(
+                context, ChatPage.router, (router) => false);
           } else if (state is AuthFailureState) {
             showSnackBar(context, state.failure.message);
           }

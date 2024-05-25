@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/usecase.dart';
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
@@ -27,15 +25,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(ChatLoadingState());
     });
 
-    on<ChatSendEvent>(_chatSendEvent);
     on<ChatStartedEvent>(_chatStartedEvent);
     on<ChatSendMyMessage>(_chatSendMyMessage);
   }
 
-  _chatSendEvent(ChatSendEvent event, Emitter<ChatState> emit) {
-    _sendChat(ChatSendParams(
-        message: event.message, userName: event.userName, time: event.time));
-  }
+  // _chatSendEvent(ChatSendEvent event, Emitter<ChatState> emit) {
+  //   _sendChat(ChatSendParams(
+  //       message: event.message, userName: event.userName, time: event.time));
+  // }
 
   _chatStartedEvent(ChatStartedEvent event, Emitter<ChatState> emit) {
     var list = _listenChat(NoParams());
@@ -57,9 +54,23 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   _chatSendMyMessage(ChatSendMyMessage event, Emitter<ChatState> emit) {
     chats.add(event.chat);
-    emit(
-      ChatRecievedState(
-        chat: List<Chat>.from(chats),
+
+    var res = _sendChat(
+      //later :: convert these params to chat data class
+      SendChatParams(
+        message: event.chat.message,
+        userName: event.chat.userName,
+        time: event.chat.time,
+      ),
+    );
+    res.fold(
+      (failure) => emit(
+        ChatFailureState(failure: failure),
+      ),
+      (r) => emit(
+        ChatRecievedState(
+          chat: List<Chat>.from(chats),
+        ),
       ),
     );
   }

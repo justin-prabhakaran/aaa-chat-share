@@ -1,9 +1,8 @@
-import 'dart:io';
-
+import 'package:aaa_chat_share/core/cubit/app_auth_cubit.dart';
+import 'package:aaa_chat_share/core/entities/user_entity.dart';
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/snack_bar.dart';
 import 'package:aaa_chat_share/core/theme.dart';
-import 'package:aaa_chat_share/features/auth/domain/entities/user_entity.dart';
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
@@ -17,10 +16,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ChatPage extends StatefulWidget {
-  final User user;
-
-  router() => MaterialPageRoute(builder: (context) => ChatPage(user: user));
-  const ChatPage({super.key, required this.user});
+  static get router =>
+      MaterialPageRoute(builder: (context) => const ChatPage());
+  const ChatPage({super.key});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -29,8 +27,16 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   late TextEditingController _textEditingController;
   late FocusNode _focusNode;
+  late User user;
   @override
   void initState() {
+    final state = context.read<AppAuthCubit>().state;
+    if (state is AppAuthLoggedInState) {
+      user = state.user;
+    } else {
+      print("state is not logged in............");
+    }
+
     _textEditingController = TextEditingController();
     context.read<FileBloc>().add(FileGetAllEvent());
 
@@ -40,8 +46,7 @@ class _ChatPageState extends State<ChatPage> {
             event.physicalKey == PhysicalKeyboardKey.enter &&
             HardwareKeyboard.instance.isShiftPressed;
         if (isShiftEnter) {
-          print('Shift + enter');
-
+        
           final text = _textEditingController.text;
           final selection = _textEditingController.selection;
 
@@ -57,7 +62,7 @@ class _ChatPageState extends State<ChatPage> {
             event.physicalKey == PhysicalKeyboardKey.enter &&
             !isShiftEnter) {
           _handleSend();
-          print('enter only');
+        
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
@@ -158,17 +163,22 @@ class _ChatPageState extends State<ChatPage> {
                         child: InkWell(
                           onTap: () async {
                             FilePickerResult? res =
-                                await FilePicker.platform.pickFiles();
+                                await FilePicker.platform.pickFiles(
+                              allowMultiple: false,
+                              onFileLoading: (status) {
+                                print(status.toString());
+                              },
+                            );
 
                             if (res != null && res.files.first.bytes != null) {
-                              print(res.files.first.bytes);
+                              // print(res.files.first.bytes);
                               Uint8List bytes = res.files.first.bytes!;
                               String fileName = res.files.first.name;
                               if (context.mounted) {
                                 context.read<FileBloc>().add(
                                       FileUploadEvent(
                                           bytes: bytes,
-                                          userId: widget.user.userId,
+                                          userId: user.userId,
                                           fileName: fileName),
                                     );
                               }
@@ -244,7 +254,7 @@ class _ChatPageState extends State<ChatPage> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20),
                                     child: MessageWidget(
-                                      userName: widget.user.userName,
+                                      userName: user.userName,
                                       isMe: state.chat[index].isMe,
                                       content: state.chat[index].message,
                                       time: state.chat[index].time,
@@ -370,7 +380,7 @@ class _ChatPageState extends State<ChatPage> {
                 isMe: true,
                 message: message,
                 time: DateTime.now(),
-                userName: widget.user.userName,
+                userName: user.userName,
               ),
             ),
           );

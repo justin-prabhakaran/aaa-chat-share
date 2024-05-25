@@ -1,5 +1,4 @@
 
-
 class User {
   String userId;
   String userName;
@@ -8,6 +7,5 @@ class User {
     required this.userId,
     required this.userName,
   });
-
   
 }

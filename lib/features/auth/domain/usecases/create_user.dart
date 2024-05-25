@@ -1,6 +1,6 @@
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/usecase.dart';
-import 'package:aaa_chat_share/features/auth/domain/entities/user_entity.dart';
+import 'package:aaa_chat_share/core/entities/user_entity.dart';
 import 'package:aaa_chat_share/features/auth/domain/repositories/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
 

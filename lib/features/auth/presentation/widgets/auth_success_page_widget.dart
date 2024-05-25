@@ -91,7 +91,7 @@ class AuthSuccessWidget extends StatelessWidget {
                       ]),
                   child: Center(
                     child: Text(
-                      "Let\'s Go",
+                      "Let's Go",
                       style: GoogleFonts.roboto(
                           fontSize: 18,
                           color: Colors.white70,
@@ -100,7 +100,7 @@ class AuthSuccessWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               )
             ],

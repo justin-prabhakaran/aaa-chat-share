@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+
 import 'dart:typed_data';
 
 import 'package:aaa_chat_share/features/chat/data/models/file_model.dart';
@@ -16,7 +16,6 @@ class RemoteFileDataSourceImpl implements RemoteFileDataSource {
     final url = Uri.parse('http://localhost:1234/upload');
     var res = await http.get(url);
     var jsnonList = jsonDecode(res.body) as List;
-    print(res.body);
     List<FileModle> files =
         jsnonList.map<FileModle>((file) => FileModle.fromMap(file)).toList();
 
@@ -30,10 +29,9 @@ class RemoteFileDataSourceImpl implements RemoteFileDataSource {
     var req = http.MultipartRequest('post', url);
     req.fields['file_size'] = bytes.length.toString();
     req.fields['user_id'] = userId;
-    req.files.add(
-        await http.MultipartFile.fromBytes('file', bytes, filename: fileName));
-    print(req.toString());
-    print(req.fields.toString());
+    req.files
+        .add(http.MultipartFile.fromBytes('file', bytes, filename: fileName));
+
     var res = await req.send();
     if (res.statusCode == 200) {
       return true;
