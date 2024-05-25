@@ -26,11 +26,8 @@ class AuthPage extends StatelessWidget {
         },
         listener: (BuildContext context, state) {
           if (state is AuthSuccessState) {
-            Navigator.push(
-                context,
-                ChatPage(
-                  user: state.user,
-                ).router());
+            Navigator.pushAndRemoveUntil(
+                context, ChatPage.router, (router) => false);
           } else if (state is AuthFailureState) {
             showSnackBar(context, state.failure.message);
           }

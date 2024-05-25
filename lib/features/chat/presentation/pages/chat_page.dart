@@ -1,7 +1,8 @@
+import 'package:aaa_chat_share/core/cubit/app_auth_cubit.dart';
+import 'package:aaa_chat_share/core/entities/user_entity.dart';
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/snack_bar.dart';
 import 'package:aaa_chat_share/core/theme.dart';
-import 'package:aaa_chat_share/features/auth/domain/entities/user_entity.dart';
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
@@ -15,10 +16,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ChatPage extends StatefulWidget {
-  final User user;
-
-  router() => MaterialPageRoute(builder: (context) => ChatPage(user: user));
-  const ChatPage({super.key, required this.user});
+  static get router =>
+      MaterialPageRoute(builder: (context) => const ChatPage());
+  const ChatPage({super.key});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -27,8 +27,11 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   late TextEditingController _textEditingController;
   late FocusNode _focusNode;
+  late User user;
   @override
   void initState() {
+    user = (context.read<AppAuthCubit>().state as AppAuthLoggedInState).user;
+
     _textEditingController = TextEditingController();
     context.read<FileBloc>().add(FileGetAllEvent());
 
@@ -171,7 +174,7 @@ class _ChatPageState extends State<ChatPage> {
                                 context.read<FileBloc>().add(
                                       FileUploadEvent(
                                           bytes: bytes,
-                                          userId: widget.user.userId,
+                                          userId: user.userId,
                                           fileName: fileName),
                                     );
                               }
@@ -247,7 +250,7 @@ class _ChatPageState extends State<ChatPage> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20),
                                     child: MessageWidget(
-                                      userName: widget.user.userName,
+                                      userName: user.userName,
                                       isMe: state.chat[index].isMe,
                                       content: state.chat[index].message,
                                       time: state.chat[index].time,
@@ -373,7 +376,7 @@ class _ChatPageState extends State<ChatPage> {
                 isMe: true,
                 message: message,
                 time: DateTime.now(),
-                userName: widget.user.userName,
+                userName: user.userName,
               ),
             ),
           );

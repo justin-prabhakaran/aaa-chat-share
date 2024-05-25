@@ -1,14 +1,17 @@
+import 'package:aaa_chat_share/core/cubit/app_auth_cubit.dart';
 import 'package:aaa_chat_share/core/init_dependancy.dart';
 import 'package:aaa_chat_share/core/theme.dart';
 import 'package:aaa_chat_share/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:aaa_chat_share/features/auth/presentation/pages/auth_page.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
+import 'package:aaa_chat_share/features/chat/presentation/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   initDepends();
+
   runApp(const MyApp());
 }
 
@@ -27,11 +30,25 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => serviceLocator<ChatBloc>(),
-        )
+        ),
+        BlocProvider(
+          create: (context) => serviceLocator<AppAuthCubit>(),
+        ),
       ],
       child: MaterialApp(
         theme: ThemeData(scaffoldBackgroundColor: AppColor.dark),
-        home: AuthPage(),
+        home: BlocSelector<AppAuthCubit, AppAuthState, bool>(
+          selector: (state) {
+            return state is AuthLoadingState;
+          },
+          builder: (context, state) {
+            if (state) {
+              print('GOING TO LOGGIN...........');
+              return const ChatPage();
+            }
+            return AuthPage();
+          },
+        ),
       ),
     );
   }

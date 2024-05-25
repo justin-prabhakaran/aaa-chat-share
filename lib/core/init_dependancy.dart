@@ -1,3 +1,4 @@
+import 'package:aaa_chat_share/core/cubit/app_auth_cubit.dart';
 import 'package:aaa_chat_share/features/auth/data/datasources/remote_data_resoure.dart';
 import 'package:aaa_chat_share/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:aaa_chat_share/features/auth/domain/repositories/auth_repository.dart';
@@ -20,10 +21,15 @@ final serviceLocator = GetIt.instance;
 void initDepends() {
   serviceLocator
 
+    //Cubit
+    ..registerLazySingleton(
+      () => AppAuthCubit(),
+    )
     //Auth
     ..registerLazySingleton(
       () => AuthBloc(
         createUser: serviceLocator(),
+        appAuthCubit: serviceLocator(),
       ),
     )
     ..registerFactory(
