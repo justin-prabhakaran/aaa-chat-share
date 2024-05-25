@@ -30,7 +30,12 @@ class _ChatPageState extends State<ChatPage> {
   late User user;
   @override
   void initState() {
-    user = (context.read<AppAuthCubit>().state as AppAuthLoggedInState).user;
+    final state = context.read<AppAuthCubit>().state;
+    if (state is AppAuthLoggedInState) {
+      user = state.user;
+    } else {
+      print("state is not logged in............");
+    }
 
     _textEditingController = TextEditingController();
     context.read<FileBloc>().add(FileGetAllEvent());
@@ -41,8 +46,7 @@ class _ChatPageState extends State<ChatPage> {
             event.physicalKey == PhysicalKeyboardKey.enter &&
             HardwareKeyboard.instance.isShiftPressed;
         if (isShiftEnter) {
-          print('Shift + enter');
-
+        
           final text = _textEditingController.text;
           final selection = _textEditingController.selection;
 
@@ -58,7 +62,7 @@ class _ChatPageState extends State<ChatPage> {
             event.physicalKey == PhysicalKeyboardKey.enter &&
             !isShiftEnter) {
           _handleSend();
-          print('enter only');
+        
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;

@@ -3,11 +3,15 @@ import 'package:aaa_chat_share/features/auth/data/datasources/remote_data_resour
 import 'package:aaa_chat_share/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:aaa_chat_share/features/auth/domain/repositories/auth_repository.dart';
 import 'package:aaa_chat_share/features/auth/domain/usecases/create_user.dart';
+import 'package:aaa_chat_share/features/auth/domain/usecases/is_user_logged_in.dart';
+import 'package:aaa_chat_share/features/auth/domain/usecases/save_user_logged_in.dart';
 import 'package:aaa_chat_share/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/remote_file_datasource.dart';
 import 'package:aaa_chat_share/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:aaa_chat_share/features/chat/data/repositories/file_repository_impl.dart';
+import 'package:aaa_chat_share/features/chat/domain/repositories/chat_repository.dart';
+import 'package:aaa_chat_share/features/chat/domain/repositories/file_repository.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_files.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/listen_chat.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/send_chat.dart';
@@ -20,16 +24,15 @@ final serviceLocator = GetIt.instance;
 
 void initDepends() {
   serviceLocator
-
-    //Cubit
-    ..registerLazySingleton(
-      () => AppAuthCubit(),
+    //Auth Use Cases
+    ..registerFactory(
+      () => SaveUserLoggedIn(
+        authRepository: serviceLocator(),
+      ),
     )
-    //Auth
-    ..registerLazySingleton(
-      () => AuthBloc(
-        createUser: serviceLocator(),
-        appAuthCubit: serviceLocator(),
+    ..registerFactory(
+      () => IsUserLoggedIn(
+        authRepository: serviceLocator(),
       ),
     )
     ..registerFactory(
@@ -37,6 +40,8 @@ void initDepends() {
         authRepository: serviceLocator(),
       ),
     )
+
+    //Auth Repositories
     ..registerFactory<AuthRepository>(
       () => AuthRepositoryImpl(
         remoteDataSource: serviceLocator(),
@@ -46,55 +51,74 @@ void initDepends() {
       () => RemoteDataSourceImp(),
     )
 
-    //File
+    //File Use Cases
+    ..registerFactory(
+      () => GetAllFiles(
+        fileRepository: serviceLocator(),
+      ),
+    )
+    ..registerFactory(
+      () => UploadFile(
+        fileRepository: serviceLocator(),
+      ),
+    )
+
+    //File Repositories
+    ..registerFactory<FileRepository>(
+      () => FileRepositoryImpl(
+        remoteFileDataSource: serviceLocator(),
+      ),
+    )
+    ..registerFactory<RemoteFileDataSource>(
+      () => RemoteFileDataSourceImpl(),
+    )
+
+    //Chat Use Cases
+    ..registerFactory(
+      () => SendChat(
+        chatRepository: serviceLocator(),
+      ),
+    )
+    ..registerFactory(
+      () => ListenChat(
+        chatRepository: serviceLocator(),
+      ),
+    )
+
+    //Chat Repositories
+    ..registerFactory<ChatRepository>(
+      () => ChatRepositoryImpl(
+        chatRemoteDataSource: serviceLocator(),
+      ),
+    )
+    ..registerLazySingleton<ChatRemoteDataSource>(
+      () => ChatRemoteDataSourceImpl(),
+    )
+
+    //Blocs
+    ..registerLazySingleton(
+      () => AuthBloc(
+        createUser: serviceLocator(),
+        appAuthCubit: serviceLocator(),
+        isUserLoggedIn: serviceLocator(),
+        saveUserLoggedIn: serviceLocator(),
+      ),
+    )
     ..registerLazySingleton(
       () => FileBloc(
         getAllFiles: serviceLocator(),
         upladFile: serviceLocator(),
       ),
     )
-    ..registerFactory(
-      () => GetAllFiles(
-        fileRepository: serviceLocator<FileRepositoryImpl>(),
-      ),
-    )
-    ..registerFactory(
-      () => UploadFile(
-        fileRepository: serviceLocator<FileRepositoryImpl>(),
-      ),
-    )
-    ..registerFactory(
-      () => FileRepositoryImpl(
-        remoteFileDataSource: serviceLocator<RemoteFileDataSourceImpl>(),
-      ),
-    )
-    ..registerFactory(
-      () => RemoteFileDataSourceImpl(),
-    )
-
-    //Chat
     ..registerLazySingleton(
       () => ChatBloc(
         sendChat: serviceLocator(),
         listenChat: serviceLocator(),
       ),
     )
-    ..registerFactory(
-      () => SendChat(
-        chatRepository: serviceLocator<ChatRepositoryImpl>(),
-      ),
-    )
-    ..registerFactory(
-      () => ListenChat(
-        chatRepository: serviceLocator<ChatRepositoryImpl>(),
-      ),
-    )
-    ..registerFactory(
-      () => ChatRepositoryImpl(
-        chatRemoteDataSource: serviceLocator<ChatRemoteDataSourceImpl>(),
-      ),
-    )
+
+    //Cubit
     ..registerLazySingleton(
-      () => ChatRemoteDataSourceImpl(),
+      () => AppAuthCubit(),
     );
 }

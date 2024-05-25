@@ -16,7 +16,6 @@ class RemoteFileDataSourceImpl implements RemoteFileDataSource {
     final url = Uri.parse('http://localhost:1234/upload');
     var res = await http.get(url);
     var jsnonList = jsonDecode(res.body) as List;
-    print(res.body);
     List<FileModle> files =
         jsnonList.map<FileModle>((file) => FileModle.fromMap(file)).toList();
 
@@ -32,8 +31,7 @@ class RemoteFileDataSourceImpl implements RemoteFileDataSource {
     req.fields['user_id'] = userId;
     req.files
         .add(http.MultipartFile.fromBytes('file', bytes, filename: fileName));
-    print(req.toString());
-    print(req.fields.toString());
+
     var res = await req.send();
     if (res.statusCode == 200) {
       return true;

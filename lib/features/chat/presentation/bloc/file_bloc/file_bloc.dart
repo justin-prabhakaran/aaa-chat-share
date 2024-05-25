@@ -32,7 +32,7 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     final res = await _getAllFiles(
       NoParams(),
     );
-    print(res);
+
     res.fold(
       (failure) => emit(
         FileFailureState(

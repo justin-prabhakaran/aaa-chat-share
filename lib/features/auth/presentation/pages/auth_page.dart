@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AuthPage extends StatelessWidget {
   final TextEditingController _textEditingController = TextEditingController();
 
-  static router() => MaterialPageRoute(builder: (context) => AuthPage());
+  static get router => MaterialPageRoute(builder: (context) => AuthPage());
   AuthPage({super.key});
 
   @override

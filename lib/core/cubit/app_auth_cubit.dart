@@ -9,6 +9,7 @@ class AppAuthCubit extends Cubit<AppAuthState> {
 
   void updateUser(User? user) {
     if (user == null) {
+      print('null is given.......');
       emit(AppAuthInitial());
     } else {
       emit(

@@ -9,7 +9,7 @@ sealed class AppAuthState extends Equatable {
 
 final class AppAuthInitial extends AppAuthState {}
 
-class AppAuthLoggedInState extends AppAuthState {
+final class AppAuthLoggedInState extends AppAuthState {
   final User user;
   const AppAuthLoggedInState({required this.user});
 }

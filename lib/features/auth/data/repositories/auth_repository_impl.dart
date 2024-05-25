@@ -21,4 +21,38 @@ class AuthRepositoryImpl implements AuthRepository {
       return left(Failure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, User?>> isUserLoggedIn() async {
+    try {
+      final res = await _remoteDataSource.isUserLoggedIn();
+      if (res.isNotEmpty) {
+        print(UserModle.fromMap(res));
+        return right(UserModle.fromMap(res));
+      }
+      return right(null);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> removeUserData() async {
+    try {
+      final res = await _remoteDataSource.removeUserLoggedIn();
+      return right(res);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> storeUserData(String userId) async {
+    try {
+      final res = await _remoteDataSource.saveUserLoggedIn(userId);
+      return right(res);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
 }
