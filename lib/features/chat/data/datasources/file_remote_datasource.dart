@@ -15,7 +15,7 @@ abstract interface class FileRemoteDataSource {
 }
 
 class FileRemoteDataSourceImpl implements FileRemoteDataSource {
-  final StreamController<void> _streamController = StreamController<void>();
+  final StreamController<void> _streamController = StreamController.broadcast();
   late io.Socket _socket;
 
   FileRemoteDataSourceImpl() {
