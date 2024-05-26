@@ -1,16 +1,48 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'dart:typed_data';
 
 import 'package:aaa_chat_share/features/chat/data/models/file_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
-abstract interface class RemoteFileDataSource {
+abstract interface class FileRemoteDataSource {
   Future<List<FileModle>> getAllFiles();
   Future<bool> upladFile(Uint8List file, String userId, String fileName);
+
+  Stream<void> listenOnFiles();
 }
 
-class RemoteFileDataSourceImpl implements RemoteFileDataSource {
+class FileRemoteDataSourceImpl implements FileRemoteDataSource {
+  final StreamController<void> _streamController = StreamController.broadcast();
+  late io.Socket _socket;
+
+  FileRemoteDataSourceImpl() {
+    _socket = io.io(
+        'http://localhost:1234',
+        io.OptionBuilder()
+            .setTransports(['websockets'])
+            .disableAutoConnect()
+            .build());
+
+    _socket.on('connect', (_) {
+      print('Connected to file socket server');
+    });
+
+    _socket.on('disconnect', (_) {
+      print('Disconnected from file socket server');
+    });
+
+    _socket.on('updatefiles', (_) {
+      _streamController.add(null);
+    });
+
+    if (!_socket.connected) {
+      _socket.connect();
+    }
+  }
+
   @override
   Future<List<FileModle>> getAllFiles() async {
     final url = Uri.parse('http://localhost:1234/upload');
@@ -37,5 +69,10 @@ class RemoteFileDataSourceImpl implements RemoteFileDataSource {
       return true;
     }
     return false;
+  }
+
+  @override
+  Stream<void> listenOnFiles() {
+    return _streamController.stream;
   }
 }

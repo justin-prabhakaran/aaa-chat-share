@@ -21,22 +21,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   })  : _sendChat = sendChat,
         _listenChat = listenChat,
         super(ChatInitial()) {
-    on<ChatEvent>((event, emit) {
-      emit(ChatLoadingState());
-    });
-
     on<ChatStartedEvent>(_chatStartedEvent);
     on<ChatSendMyMessage>(_chatSendMyMessage);
   }
 
-  // _chatSendEvent(ChatSendEvent event, Emitter<ChatState> emit) {
-  //   _sendChat(ChatSendParams(
-  //       message: event.message, userName: event.userName, time: event.time));
-  // }
-
   _chatStartedEvent(ChatStartedEvent event, Emitter<ChatState> emit) {
     var list = _listenChat(NoParams());
-
     list.fold(
         (failure) => emit(
               ChatFailureState(failure: failure),

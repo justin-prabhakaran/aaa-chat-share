@@ -7,13 +7,14 @@ import 'package:aaa_chat_share/features/auth/domain/usecases/is_user_logged_in.d
 import 'package:aaa_chat_share/features/auth/domain/usecases/save_user_logged_in.dart';
 import 'package:aaa_chat_share/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/chat_remote_datasource.dart';
-import 'package:aaa_chat_share/features/chat/data/datasources/remote_file_datasource.dart';
+import 'package:aaa_chat_share/features/chat/data/datasources/file_remote_datasource.dart';
 import 'package:aaa_chat_share/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:aaa_chat_share/features/chat/data/repositories/file_repository_impl.dart';
 import 'package:aaa_chat_share/features/chat/domain/repositories/chat_repository.dart';
 import 'package:aaa_chat_share/features/chat/domain/repositories/file_repository.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_files.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/listen_chat.dart';
+import 'package:aaa_chat_share/features/chat/domain/usecases/listen_files.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/send_chat.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/upload_file.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
@@ -62,6 +63,11 @@ void initDepends() {
         fileRepository: serviceLocator(),
       ),
     )
+    ..registerFactory(
+      () => ListenOnFiles(
+        fileRepository: serviceLocator(),
+      ),
+    )
 
     //File Repositories
     ..registerFactory<FileRepository>(
@@ -69,8 +75,8 @@ void initDepends() {
         remoteFileDataSource: serviceLocator(),
       ),
     )
-    ..registerFactory<RemoteFileDataSource>(
-      () => RemoteFileDataSourceImpl(),
+    ..registerLazySingleton<FileRemoteDataSource>(
+      () => FileRemoteDataSourceImpl(),
     )
 
     //Chat Use Cases
@@ -108,6 +114,7 @@ void initDepends() {
       () => FileBloc(
         getAllFiles: serviceLocator(),
         upladFile: serviceLocator(),
+        listenOnFiles: serviceLocator(),
       ),
     )
     ..registerLazySingleton(

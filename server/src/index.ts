@@ -53,7 +53,7 @@ app.post('/user', async (req, res) => {
 
     if (user_name) {
         try {
-            const rs = await saveUser(user_name); 
+            const rs = await saveUser(user_name);
             return res.status(201).json(rs);
         } catch (error) {
             console.error(error);
@@ -69,7 +69,7 @@ app.get('/user', async (req, res) => {
     const userId = req.query.user_id;
     if (userId) {
         try {
-            const result = await User.findById(userId); 
+            const result = await User.findById(userId);
             if (result) {
                 console.log(result);
                 return res.status(200).json(result);
@@ -96,8 +96,10 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         }
         const newFile = await File.findOne(query);
         console.log(newFile);
-        if (newFile)
+        if (newFile) {
+            io.emit('updatefiles');
             return res.status(200).json();
+        }
     }
     return res.status(404).json("file Not Found !");
 });
@@ -160,6 +162,7 @@ io.on('connection', (socket) => {
             console.log(e);
         }
     });
+
 });
 
 

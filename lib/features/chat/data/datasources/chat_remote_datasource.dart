@@ -22,7 +22,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .build(),
     );
     _socket.on('connect', (_) {
-      print('Connected to socket server');
+      print('Connected to chat socket server');
     });
 
     _socket.on('message', (data) {
@@ -36,10 +36,9 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     });
 
     _socket.on('disconnect', (_) {
-      print('Disconnected from socket server');
+      print('Disconnected from chat socket server');
     });
 
-    // Ensure the socket attempts to connect
     if (!_socket.connected) {
       _socket.connect();
     }

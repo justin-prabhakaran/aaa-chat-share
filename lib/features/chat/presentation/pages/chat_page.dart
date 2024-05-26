@@ -4,6 +4,7 @@ import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/snack_bar.dart';
 import 'package:aaa_chat_share/core/theme.dart';
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
+import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_files.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/file_widget.dart';
@@ -38,15 +39,15 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     _textEditingController = TextEditingController();
+    context.read<ChatBloc>().add(ChatStartedEvent());
+    context.read<FileBloc>().add(FileStartListenEvent());
     context.read<FileBloc>().add(FileGetAllEvent());
-
     _focusNode = FocusNode(
       onKeyEvent: (node, event) {
         final isShiftEnter = event is KeyDownEvent &&
             event.physicalKey == PhysicalKeyboardKey.enter &&
             HardwareKeyboard.instance.isShiftPressed;
         if (isShiftEnter) {
-        
           final text = _textEditingController.text;
           final selection = _textEditingController.selection;
 
@@ -62,7 +63,7 @@ class _ChatPageState extends State<ChatPage> {
             event.physicalKey == PhysicalKeyboardKey.enter &&
             !isShiftEnter) {
           _handleSend();
-        
+
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
@@ -241,11 +242,7 @@ class _ChatPageState extends State<ChatPage> {
                             }
                           },
                           builder: (context, state) {
-                            if (state is ChatLoadingState) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else if (state is ChatRecievedState) {
+                            if (state is ChatRecievedState) {
                               return ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: state.chat.length,

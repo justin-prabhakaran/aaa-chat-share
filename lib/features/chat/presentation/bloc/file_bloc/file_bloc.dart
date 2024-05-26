@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/usecase.dart';
 import 'package:aaa_chat_share/features/chat/domain/entities/file.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_files.dart';
+import 'package:aaa_chat_share/features/chat/domain/usecases/listen_files.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/upload_file.dart';
 
 import 'package:equatable/equatable.dart';
@@ -15,20 +17,25 @@ part 'file_state.dart';
 class FileBloc extends Bloc<FileEvent, FileState> {
   final GetAllFiles _getAllFiles;
   final UploadFile _uploadFile;
-  FileBloc({required GetAllFiles getAllFiles, required UploadFile upladFile})
+  final ListenOnFiles _listenOnFiles;
+  FileBloc(
+      {required GetAllFiles getAllFiles,
+      required UploadFile upladFile,
+      required ListenOnFiles listenOnFiles})
       : _getAllFiles = getAllFiles,
         _uploadFile = upladFile,
+        _listenOnFiles = listenOnFiles,
         super(FileInitial()) {
-    on<FileEvent>((event, emit) {
-      emit(FileLoadingState());
-    });
+    
 
     on<FileGetAllEvent>(_fileGetAllEvent);
     on<FileUploadEvent>(_fileUploadEvent);
     on<FileThrowErrorEvent>(_fileThrowErrorEvent);
+    on<FileStartListenEvent>(_fileStartListenEvent);
   }
 
   _fileGetAllEvent(FileGetAllEvent event, Emitter<FileState> emit) async {
+    emit(FileLoadingState());
     final res = await _getAllFiles(
       NoParams(),
     );
@@ -46,6 +53,7 @@ class FileBloc extends Bloc<FileEvent, FileState> {
   }
 
   _fileUploadEvent(FileUploadEvent event, Emitter<FileState> emit) async {
+    emit(FileLoadingState());
     final res = await _uploadFile(
       UploadFileParams(
           userId: event.userId, file: event.bytes, fileName: event.fileName),
@@ -56,7 +64,11 @@ class FileBloc extends Bloc<FileEvent, FileState> {
               FileFailureState(failure),
             ), (isUploaded) {
       if (isUploaded) {
-        add(FileGetAllEvent());
+        emit(
+          FileFailureState(
+            Failure('File Upload Successfully !!!!'),
+          ),
+        );
       } else {
         emit(
           FileFailureState(
@@ -71,5 +83,15 @@ class FileBloc extends Bloc<FileEvent, FileState> {
     emit(
       FileFailureState(event.failure),
     );
+  }
+
+  _fileStartListenEvent(FileStartListenEvent event, Emitter<FileState> emit) {
+    final res = _listenOnFiles(NoParams());
+
+    res.fold((failure) => emit(FileFailureState(failure)), (stream) {
+      stream.listen((_) {
+        add(FileGetAllEvent());
+      });
+    });
   }
 }

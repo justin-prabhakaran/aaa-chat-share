@@ -22,3 +22,5 @@ class FileThrowErrorEvent extends FileEvent {
 
   const FileThrowErrorEvent({required this.failure});
 }
+
+class FileStartListenEvent extends FileEvent {}
