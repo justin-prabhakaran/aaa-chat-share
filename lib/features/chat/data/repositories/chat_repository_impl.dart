@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
@@ -12,7 +14,7 @@ class ChatRepositoryImpl implements ChatRepository {
   }) : _chatRemoteDataSource = chatRemoteDataSource;
 
   @override
-  Either<Failure, Stream<Chat>> listen() {
+  Either<Failure, StreamController<Chat>> listen() {
     try {
       return right(
         _chatRemoteDataSource.listen(),

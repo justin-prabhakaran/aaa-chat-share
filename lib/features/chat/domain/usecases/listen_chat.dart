@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/usecase.dart';
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
@@ -11,7 +13,7 @@ class ListenChat implements UseCaseNoFuture<void, NoParams> {
       : _chatRepository = chatRepository;
 
   @override
-  Either<Failure, Stream<Chat>> call(NoParams param) {
+  Either<Failure, StreamController<Chat>> call(NoParams param) {
     return _chatRepository.listen();
   }
 }

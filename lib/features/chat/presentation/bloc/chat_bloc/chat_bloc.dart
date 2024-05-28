@@ -26,12 +26,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   _chatStartedEvent(ChatStartedEvent event, Emitter<ChatState> emit) {
-    var list = _listenChat(NoParams());
-    list.fold(
+    var listen = _listenChat(NoParams());
+    listen.fold(
         (failure) => emit(
               ChatFailureState(failure: failure),
-            ), (stream) {
-      stream.listen((chat) {
+            ), (streamc) {
+      streamc.stream.listen(onDone: () {
+        print('Stopped.....');
+      }, onError: (ob, e) {
+        print('Erooooooor ');
+      }, (chat) {
+        print('from listen : $chat');
         chats.add(chat);
         emit(
           ChatRecievedState(
@@ -46,7 +51,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     chats.add(event.chat);
 
     var res = _sendChat(
-      //later :: convert these params to chat data class
       SendChatParams(
         message: event.chat.message,
         userName: event.chat.userName,
@@ -57,7 +61,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       (failure) => emit(
         ChatFailureState(failure: failure),
       ),
-      (r) => emit(
+      (_) => emit(
         ChatRecievedState(
           chat: List<Chat>.from(chats),
         ),

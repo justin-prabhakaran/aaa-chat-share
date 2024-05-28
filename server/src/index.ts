@@ -157,7 +157,7 @@ io.on('connection', (socket) => {
         try {
             let pdata = JSON.parse(data);
             console.log(pdata);
-            socket.broadcast.emit('message', pdata);
+            socket.broadcast.emit('message', data);
         } catch (e) {
             console.log(e);
         }
