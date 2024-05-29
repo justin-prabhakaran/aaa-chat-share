@@ -4,7 +4,6 @@ import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/snack_bar.dart';
 import 'package:aaa_chat_share/core/theme.dart';
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
-import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_files.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/widgets/file_widget.dart';
@@ -245,16 +244,17 @@ class _ChatPageState extends State<ChatPage> {
                             if (state is ChatRecievedState) {
                               return ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: state.chat.length,
+                                itemCount: state.chats.length,
                                 itemBuilder: (context, index) {
+                                  print(state.chats);
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20),
                                     child: MessageWidget(
                                       userName: user.userName,
-                                      isMe: state.chat[index].isMe,
-                                      content: state.chat[index].message,
-                                      time: state.chat[index].time,
+                                      isMe: state.chats[index].isMe,
+                                      content: state.chats[index].message,
+                                      time: state.chats[index].time,
                                     ),
                                   );
                                 },
@@ -279,42 +279,6 @@ class _ChatPageState extends State<ChatPage> {
               ],
             ),
           ),
-          // Padding(
-          //   padding:
-          //       const EdgeInsets.only(bottom: 50, left: 50, right: 50, top: 10),
-          //   child: TextField(
-          //     maxLines: null,
-          //     style: GoogleFonts.roboto(
-          //       color: Colors.white,
-          //       fontWeight: FontWeight.w300,
-          //       fontSize: 16,
-          //     ),
-          //     onSubmitted: (val) {
-          //       context.read<ChatBloc>().add(
-          //             ChatSendMyMessage(
-          //               chat: Chat(
-          //                 isMe: true,
-          //                 message: val.trim(),
-          //                 time: DateTime.now(),
-          //                 userName: widget.user.userName,
-          //               ),
-          //             ),
-          //           );
-          //     },
-          //     decoration: InputDecoration(
-          //       hintStyle: GoogleFonts.roboto(
-          //           color: Colors.white,
-          //           fontSize: 16,
-          //           fontWeight: FontWeight.w300),
-          //       hintText: 'Type a message..',
-          //       border: border(),
-          //       errorBorder: border(),
-          //       enabledBorder: border(),
-          //       focusedBorder: border(),
-          //     ),
-          //   ),
-          // ),
-
           Padding(
             padding:
                 const EdgeInsets.only(bottom: 20, left: 20, right: 20, top: 10),

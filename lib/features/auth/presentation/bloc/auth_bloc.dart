@@ -44,7 +44,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       inres.fold((failure) => emit(AuthFailureState(failure: failure)), (_) {
         _appAuthCubit.updateUser(user);
-        emit(AuthSuccessState());
       });
     });
   }
@@ -57,10 +56,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (user) {
         if (user != null) {
           _appAuthCubit.updateUser(user);
-          emit(AuthSuccessState());
         } else {
           emit(AuthFailureState(failure: Failure('User is not logged in')));
-          emit(AuthInitial());
         }
       },
     );

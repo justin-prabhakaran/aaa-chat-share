@@ -5,38 +5,31 @@ import 'package:aaa_chat_share/features/chat/data/models/chat_model.dart';
 
 abstract class ChatRemoteDataSource {
   void sendChat(String message, String userName, DateTime time);
-  Stream<ChatModel> listen();
+  StreamController<ChatModel> listen();
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
-  final StreamController<ChatModel> _streamController =
-      StreamController<ChatModel>.broadcast();
-  late final io.Socket _socket;
+  final StreamController<ChatModel> _streamController;
+  final io.Socket _socket;
 
-  ChatRemoteDataSourceImpl() {
-    _socket = io.io(
-      'http://localhost:1234',
-      io.OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect()
-          .build(),
-    );
+  ChatRemoteDataSourceImpl(
+      {required io.Socket socket,
+      required StreamController<ChatModel> streamController})
+      : _socket = socket,
+        _streamController = streamController {
+    
     _socket.on('connect', (_) {
-      print('Connected to chat socket server');
+      print('Message :: Connected to chat socket server');
     });
 
     _socket.on('message', (data) {
       print(data);
-      if (data is Map<String, dynamic>) {
-        ChatModel chat = ChatModel.fromMap(data);
-        _streamController.add(chat);
-      } else {
-        print('Invalid data format: $data');
-      }
+      ChatModel chat = ChatModel.fromMap(jsonDecode(data));
+      _streamController.add(chat);
     });
 
     _socket.on('disconnect', (_) {
-      print('Disconnected from chat socket server');
+      print('Message :: Disconnected from chat socket server');
     });
 
     if (!_socket.connected) {
@@ -45,8 +38,8 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   @override
-  Stream<ChatModel> listen() {
-    return _streamController.stream;
+  StreamController<ChatModel> listen() {
+    return _streamController;
   }
 
   @override
@@ -56,12 +49,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       'user_name': userName,
       'time': time.millisecondsSinceEpoch
     };
-    var jsondata = jsonEncode(data);
-    print(jsondata);
-    _socket.emit('message', jsondata);
+
+    _socket.emit('message', jsonEncode(data));
   }
 
-  // Remember to close the stream controller when done
   void dispose() {
     _streamController.close();
     _socket.dispose();

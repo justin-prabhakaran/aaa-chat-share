@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:aaa_chat_share/core/cubit/app_auth_cubit.dart';
 import 'package:aaa_chat_share/features/auth/data/datasources/remote_data_resoure.dart';
 import 'package:aaa_chat_share/features/auth/data/repositories/auth_repository_impl.dart';
@@ -8,6 +10,7 @@ import 'package:aaa_chat_share/features/auth/domain/usecases/save_user_logged_in
 import 'package:aaa_chat_share/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/file_remote_datasource.dart';
+import 'package:aaa_chat_share/features/chat/data/models/chat_model.dart';
 import 'package:aaa_chat_share/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:aaa_chat_share/features/chat/data/repositories/file_repository_impl.dart';
 import 'package:aaa_chat_share/features/chat/domain/repositories/chat_repository.dart';
@@ -20,6 +23,7 @@ import 'package:aaa_chat_share/features/chat/domain/usecases/upload_file.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -76,7 +80,8 @@ void initDepends() {
       ),
     )
     ..registerLazySingleton<FileRemoteDataSource>(
-      () => FileRemoteDataSourceImpl(),
+      () => FileRemoteDataSourceImpl(
+          streamController: serviceLocator(), socket: serviceLocator()),
     )
 
     //Chat Use Cases
@@ -98,7 +103,8 @@ void initDepends() {
       ),
     )
     ..registerLazySingleton<ChatRemoteDataSource>(
-      () => ChatRemoteDataSourceImpl(),
+      () => ChatRemoteDataSourceImpl(
+          socket: serviceLocator(), streamController: serviceLocator()),
     )
 
     //Blocs
@@ -127,5 +133,22 @@ void initDepends() {
     //Cubit
     ..registerLazySingleton(
       () => AppAuthCubit(),
+    )
+
+    //Addons
+    ..registerLazySingleton<StreamController<ChatModel>>(
+      () => StreamController<ChatModel>(),
+    )
+    ..registerLazySingleton<StreamController<void>>(
+      () => StreamController<void>(),
+    )
+    ..registerLazySingleton<Socket>(
+      () => io(
+        'http://localhost:1234',
+        OptionBuilder()
+            .setTransports(['websocket'])
+            .disableAutoConnect()
+            .build(),
+      ),
     );
 }

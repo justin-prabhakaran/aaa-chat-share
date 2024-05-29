@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
@@ -12,7 +14,7 @@ class ChatRepositoryImpl implements ChatRepository {
   }) : _chatRemoteDataSource = chatRemoteDataSource;
 
   @override
-  Either<Failure, Stream<Chat>> listen() {
+  Either<Failure, StreamController<Chat>> listen() {
     try {
       return right(
         _chatRemoteDataSource.listen(),
@@ -30,7 +32,8 @@ class ChatRepositoryImpl implements ChatRepository {
   Either<Failure, void> sendChat(
       String message, DateTime time, String userName) {
     try {
-      return right(_chatRemoteDataSource.sendChat(message, userName, time));
+      _chatRemoteDataSource.sendChat(message, userName, time);
+      return right(null);
     } catch (e) {
       return left(
         Failure(
@@ -40,8 +43,4 @@ class ChatRepositoryImpl implements ChatRepository {
     }
   }
 
-  // @override
-  // void sendChat(String message, DateTime time, String userName) {
-  //   _chatRemoteDataSource.sendChat(message, userName, time);
-  // }
 }

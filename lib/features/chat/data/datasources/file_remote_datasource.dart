@@ -15,17 +15,14 @@ abstract interface class FileRemoteDataSource {
 }
 
 class FileRemoteDataSourceImpl implements FileRemoteDataSource {
-  final StreamController<void> _streamController = StreamController.broadcast();
-  late io.Socket _socket;
+  final StreamController<void> _streamController;
+  final io.Socket _socket;
 
-  FileRemoteDataSourceImpl() {
-    _socket = io.io(
-        'http://localhost:1234',
-        io.OptionBuilder()
-            .setTransports(['websockets'])
-            .disableAutoConnect()
-            .build());
-
+  FileRemoteDataSourceImpl(
+      {required StreamController<void> streamController,
+      required io.Socket socket})
+      : _streamController = streamController,
+        _socket = socket {
     _socket.on('connect', (_) {
       print('Connected to file socket server');
     });
