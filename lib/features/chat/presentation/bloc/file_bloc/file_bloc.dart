@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:aaa_chat_share/core/failure.dart';
@@ -26,8 +25,6 @@ class FileBloc extends Bloc<FileEvent, FileState> {
         _uploadFile = upladFile,
         _listenOnFiles = listenOnFiles,
         super(FileInitial()) {
-    
-
     on<FileGetAllEvent>(_fileGetAllEvent);
     on<FileUploadEvent>(_fileUploadEvent);
     on<FileThrowErrorEvent>(_fileThrowErrorEvent);

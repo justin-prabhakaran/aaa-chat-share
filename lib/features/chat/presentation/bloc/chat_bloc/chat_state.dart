@@ -10,9 +10,9 @@ abstract class ChatState extends Equatable {
 class ChatInitial extends ChatState {}
 
 class ChatRecievedState extends ChatState {
-  final List<Chat> chat;
+  final List<Chat> chats;
 
-  const ChatRecievedState({required this.chat});
+  const ChatRecievedState({required this.chats});
 }
 
 class ChatFailureState extends ChatState {

@@ -25,6 +25,13 @@ export interface FileDoc extends Document {
     user_id: Schema.Types.ObjectId,
 }
 
+interface ChatDoc extends Document {
+    chat_id: Schema.Types.ObjectId,
+    user_id: Schema.Types.ObjectId,
+    message: String,
+    time: Number,
+}
+
 const UserSchema = new Schema<UserDoc>(
     {
         user_id: {
@@ -68,8 +75,36 @@ const FileSchema = new Schema<FileDoc>(
 );
 
 
+const ChatSchema = new Schema<ChatDoc>(
+    {
+        chat_id: {
+            type: Schema.Types.ObjectId,
+            default: function (this: Document) {
+                return this.id;
+            }
+        },
+
+        user_id: {
+            required: true,
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        },
+
+        message: {
+            type: String,
+            required: true,
+        },
+
+        time: {
+            type: Number,
+            required: true,
+        }
+    }
+);
+
 export const User = mongoose.model<UserDoc>('User', UserSchema);
 export const File = mongoose.model<FileDoc>('File', FileSchema);
+export const Chat = mongoose.model<ChatDoc>('Chat', ChatSchema);
 
 export async function saveUser(user_name: String) {
 
@@ -90,11 +125,25 @@ export async function saveFile(file_name: String, file_size: Number, user_id: St
         file_name,
         file_size,
         user_id
-    })
+    });
 
     await newFile.save();
 
     return newFile;
 
+}
 
+
+export async function saveChat(user_id: String, message: String, time: Number) {
+    const newChat = new Chat(
+        {
+            user_id,
+            message,
+            time
+        }
+    );
+
+    await newChat.save();
+
+    return newChat;
 }

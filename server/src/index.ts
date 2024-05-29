@@ -4,7 +4,7 @@ import http from 'http';
 import morgan from 'morgan';
 import cors from 'cors'
 import { Server } from 'socket.io';
-import { saveFile, saveUser, File, User, FileDoc } from './mongo';
+import { saveFile, saveUser, File, User, FileDoc, saveChat, Chat } from './mongo';
 import multer from 'multer';
 import path from 'path';
 
@@ -107,25 +107,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 //gives all file 
 app.get('/upload', async (req, res) => {
 
-
-    // const result = await File.find();
-
-    // let newres: Array<any> = [{}];
-
-    // result.forEach(async (value, i) => {
-    //     console.log(value, i);
-    //     newres[i].file_id = value.file_id,
-    //         newres[i].file_name = value.file_name,
-    //         newres[i].file_size = value.file_size
-    //     const res = await User.findById(value.user_id);
-    //     newres[i].user_name = res?.user_name ?? 'null';
-    //     newres[i].file_link = `http://localhost:${process.env.PORT}/uploads/${value.file_id}${path.extname(value.file_name.toString())}`
-
-    //     console.log(newres[i])
-    // });
-
-    // return res.status(200).json(newres);
-
     try {
         const result = await File.find();
         const newres = await Promise.all(result.map(async (value) => {
@@ -151,18 +132,60 @@ app.get('/upload', async (req, res) => {
 
 
 
-io.on('connection', (socket) => {
+app.post('/chat', async (req, res) => {
 
-    socket.on('message', (data) => {
+    console.log(req.body);
+    const { user_id, message, time } = req.body;
+
+    if (user_id && message && time) {
         try {
-            let pdata = JSON.parse(data);
-            console.log(pdata);
-            socket.broadcast.emit('message', data);
+            const rs = await saveChat(user_id, message, time);
+            if (rs) {
+                io.emit('updatemessage');
+                return res.status(200).json(true);
+            }
+            return res.status(500).json(false);
         } catch (e) {
-            console.log(e);
+            console.error(e);
+            return res.status(500).json({
+                error: 'Internal Server Eroor'
+            });
         }
-    });
+    } else {
+        return res.status(400).json({
+            error: 'Missing Paramerters'
+        });
+    }
 
+});
+
+app.get('/chat', async (req, res) => {
+    try {
+        const rs = await Chat.find().sort({ time: -1 });
+        const newrs = Promise.all(rs.map(async (val) => {
+            console.log(val);
+            const user = await User.findById(val.user_id);
+            return {
+                user_name: user?.user_name ?? 'null',
+                message: val.message,
+                chat_id: val.chat_id,
+                time: val.time,
+            }
+        }));
+
+        return res.status(200).json(newrs);
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({
+            error: 'Internal Server Erorr'
+        })
+    }
+}
+);
+
+
+io.on('connection', (socket) => {
+    console.log(`User Connected : ${socket.conn.remoteAddress}`)
 });
 
 

@@ -9,25 +9,22 @@ abstract class ChatRemoteDataSource {
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
-  final StreamController<ChatModel> _streamController =
-      StreamController<ChatModel>.broadcast();
-  late final io.Socket _socket;
+  final StreamController<ChatModel> _streamController;
+  final io.Socket _socket;
 
-  ChatRemoteDataSourceImpl() {
-    _socket = io.io(
-      'http://localhost:1234',
-      io.OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect()
-          .build(),
-    );
+  ChatRemoteDataSourceImpl(
+      {required io.Socket socket,
+      required StreamController<ChatModel> streamController})
+      : _socket = socket,
+        _streamController = streamController {
+    
     _socket.on('connect', (_) {
       print('Message :: Connected to chat socket server');
     });
 
     _socket.on('message', (data) {
       print(data);
-      ChatModel chat = ChatModel.fromMap(data);
+      ChatModel chat = ChatModel.fromMap(jsonDecode(data));
       _streamController.add(chat);
     });
 
@@ -52,12 +49,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       'user_name': userName,
       'time': time.millisecondsSinceEpoch
     };
-    var jsondata = jsonEncode(data);
-    print(jsondata);
-    _socket.emit('message', jsondata);
+
+    _socket.emit('message', jsonEncode(data));
   }
 
-  // Remember to close the stream controller when done
   void dispose() {
     _streamController.close();
     _socket.dispose();

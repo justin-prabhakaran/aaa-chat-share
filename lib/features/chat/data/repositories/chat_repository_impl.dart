@@ -32,7 +32,8 @@ class ChatRepositoryImpl implements ChatRepository {
   Either<Failure, void> sendChat(
       String message, DateTime time, String userName) {
     try {
-      return right(_chatRemoteDataSource.sendChat(message, userName, time));
+      _chatRemoteDataSource.sendChat(message, userName, time);
+      return right(null);
     } catch (e) {
       return left(
         Failure(
@@ -42,8 +43,4 @@ class ChatRepositoryImpl implements ChatRepository {
     }
   }
 
-  // @override
-  // void sendChat(String message, DateTime time, String userName) {
-  //   _chatRemoteDataSource.sendChat(message, userName, time);
-  // }
 }

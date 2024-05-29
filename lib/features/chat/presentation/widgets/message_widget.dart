@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:markdown/markdown.dart' as md;
+// import 'package:markdown/markdown.dart' as md;
 
 class MessageWidget extends StatelessWidget {
   final String userName;
