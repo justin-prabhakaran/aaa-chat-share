@@ -135,16 +135,16 @@ app.get('/upload', async (req, res) => {
 app.post('/chat', async (req, res) => {
 
     console.log(req.body);
-    const { user_id, message, time } = req.body;
+    const { user_name, message, time } = req.body;
 
-    if (user_id && message && time) {
+    if (user_name && message && time) {
         try {
-            const rs = await saveChat(user_id, message, time);
+            const rs = await saveChat(user_name, message, time);
             if (rs) {
                 io.emit('updatemessage');
-                return res.status(200).json(true);
+                return res.status(200).json();
             }
-            return res.status(500).json(false);
+            return res.status(500).json();
         } catch (e) {
             console.error(e);
             return res.status(500).json({
@@ -162,17 +162,17 @@ app.post('/chat', async (req, res) => {
 app.get('/chat', async (req, res) => {
     try {
         const rs = await Chat.find().sort({ time: -1 });
-        const newrs = Promise.all(rs.map(async (val) => {
-            console.log(val);
-            const user = await User.findById(val.user_id);
+        const newrs = await Promise.all(rs.map(async (val) => {
+            // console.log(val);
+            // const user = await User.findById(val.user_id);
             return {
-                user_name: user?.user_name ?? 'null',
+                user_name: val.user_name,
                 message: val.message,
                 chat_id: val.chat_id,
                 time: val.time,
             }
         }));
-
+        // console.log(newrs);
         return res.status(200).json(newrs);
     } catch (e) {
         console.error(e);

@@ -3,27 +3,25 @@ import 'package:aaa_chat_share/core/usecase.dart';
 import 'package:aaa_chat_share/features/chat/domain/repositories/chat_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
-class SendChat implements UseCaseNoFuture<void, SendChatParams> {
+class SendChat implements UseCase<bool, SendChatParams> {
   final ChatRepository _chatRepository;
 
-  SendChat({required ChatRepository chatRepository})
-      : _chatRepository = chatRepository;
+  SendChat({
+    required ChatRepository chatRepository,
+  }) : _chatRepository = chatRepository;
 
   @override
-  Either<Failure, void> call(SendChatParams param) {
-    return _chatRepository.sendChat(param.message, param.time, param.userName);
+  Future<Either<Failure, bool>> call(SendChatParams param) async {
+    return await _chatRepository.sendChat(
+        param.message, param.userId, param.time);
   }
 }
 
 class SendChatParams {
   String message;
-  String userName;
+  String userId;
   DateTime time;
-  bool isMe;
-  SendChatParams({
-    required this.message,
-    required this.userName,
-    required this.time,
-    this.isMe = false,
-  });
+
+  SendChatParams(
+      {required this.message, required this.userId, required this.time});
 }

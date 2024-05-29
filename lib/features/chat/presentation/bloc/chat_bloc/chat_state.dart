@@ -20,3 +20,5 @@ class ChatFailureState extends ChatState {
 
   const ChatFailureState({required this.failure});
 }
+
+

@@ -38,9 +38,11 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     _textEditingController = TextEditingController();
-    context.read<ChatBloc>().add(ChatStartedEvent());
+    context.read<ChatBloc>().add(ChatStartedListenEvent());
     context.read<FileBloc>().add(FileStartListenEvent());
     context.read<FileBloc>().add(FileGetAllEvent());
+    context.read<ChatBloc>().add(ChatGetAllChatEvent());
+
     _focusNode = FocusNode(
       onKeyEvent: (node, event) {
         final isShiftEnter = event is KeyDownEvent &&
@@ -336,7 +338,7 @@ class _ChatPageState extends State<ChatPage> {
     final message = _textEditingController.text.trim();
     if (message.isNotEmpty) {
       context.read<ChatBloc>().add(
-            ChatSendMyMessage(
+            ChatSendMyMessageEvent(
               chat: Chat(
                 isMe: true,
                 message: message,

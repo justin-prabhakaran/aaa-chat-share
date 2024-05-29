@@ -14,33 +14,30 @@ class ChatRepositoryImpl implements ChatRepository {
   }) : _chatRemoteDataSource = chatRemoteDataSource;
 
   @override
-  Either<Failure, StreamController<Chat>> listen() {
+  Future<Either<Failure, List<Chat>>> getAllChat() async {
     try {
-      return right(
-        _chatRemoteDataSource.listen(),
-      );
+      return right(await _chatRemoteDataSource.getAllChat());
     } catch (e) {
-      return left(
-        Failure(
-          e.toString(),
-        ),
-      );
+      return left(Failure(e.toString()));
     }
   }
 
   @override
-  Either<Failure, void> sendChat(
-      String message, DateTime time, String userName) {
+  Future<Either<Failure, bool>> sendChat(
+      String message, String userId, DateTime time) async {
     try {
-      _chatRemoteDataSource.sendChat(message, userName, time);
-      return right(null);
+      return right(await _chatRemoteDataSource.sendChat(message, userId, time));
     } catch (e) {
-      return left(
-        Failure(
-          e.toString(),
-        ),
-      );
+      return left(Failure(e.toString()));
     }
   }
 
+  @override
+  Either<Failure, Stream<void>> listonOnChat() {
+    try {
+      return right(_chatRemoteDataSource.listonOnChat());
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
 }
