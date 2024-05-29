@@ -27,7 +27,7 @@ export interface FileDoc extends Document {
 
 interface ChatDoc extends Document {
     chat_id: Schema.Types.ObjectId,
-    user_id: Schema.Types.ObjectId,
+    user_name: String,
     message: String,
     time: Number,
 }
@@ -84,10 +84,10 @@ const ChatSchema = new Schema<ChatDoc>(
             }
         },
 
-        user_id: {
+        user_name: {
             required: true,
-            type: Schema.Types.ObjectId,
-            ref: 'User',
+            type: String,
+
         },
 
         message: {
@@ -134,10 +134,10 @@ export async function saveFile(file_name: String, file_size: Number, user_id: St
 }
 
 
-export async function saveChat(user_id: String, message: String, time: Number) {
+export async function saveChat(user_name: String, message: String, time: Number) {
     const newChat = new Chat(
         {
-            user_id,
+            user_name,
             message,
             time
         }

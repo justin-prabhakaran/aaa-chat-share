@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'dart:typed_data';
 
+import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/features/chat/data/models/file_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -44,11 +45,15 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
   Future<List<FileModle>> getAllFiles() async {
     final url = Uri.parse('http://localhost:1234/upload');
     var res = await http.get(url);
-    var jsnonList = jsonDecode(res.body) as List;
-    List<FileModle> files =
-        jsnonList.map<FileModle>((file) => FileModle.fromMap(file)).toList();
+    if (res.statusCode == 200) {
+      var jsnonList = jsonDecode(res.body) as List;
+      List<FileModle> files =
+          jsnonList.map<FileModle>((file) => FileModle.fromMap(file)).toList();
 
-    return files;
+      return files;
+    } else {
+      throw Failure('Something went wrong!');
+    }
   }
 
   @override

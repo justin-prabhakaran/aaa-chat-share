@@ -1,31 +1,27 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/features/chat/data/models/chat_model.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:http/http.dart' as http;
 
 abstract class ChatRemoteDataSource {
-  void sendChat(String message, String userName, DateTime time);
-  StreamController<ChatModel> listen();
+  Future<bool> sendChat(String message, String userName, DateTime time);
+  Future<List<ChatModel>> getAllChat();
+  Stream<void> listonOnChat();
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
-  final StreamController<ChatModel> _streamController;
+  final StreamController<void> _streamController;
   final io.Socket _socket;
 
   ChatRemoteDataSourceImpl(
       {required io.Socket socket,
-      required StreamController<ChatModel> streamController})
+      required StreamController<void> streamController})
       : _socket = socket,
         _streamController = streamController {
-    
     _socket.on('connect', (_) {
       print('Message :: Connected to chat socket server');
-    });
-
-    _socket.on('message', (data) {
-      print(data);
-      ChatModel chat = ChatModel.fromMap(jsonDecode(data));
-      _streamController.add(chat);
     });
 
     _socket.on('disconnect', (_) {
@@ -35,26 +31,44 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     if (!_socket.connected) {
       _socket.connect();
     }
+
+    _socket.on('updatemessage', (_) {
+      _streamController.add(null);
+    });
   }
 
   @override
-  StreamController<ChatModel> listen() {
-    return _streamController;
-  }
-
-  @override
-  void sendChat(String message, String userName, DateTime time) {
-    Map<String, dynamic> data = {
+  Future<bool> sendChat(String message, String userName, DateTime time) async {
+    final url = Uri.parse('http://localhost:1234');
+    final headers = {"Accept": "*/*", "Content-Type": "application/json"};
+    final body = jsonEncode({
       'message': message,
       'user_name': userName,
-      'time': time.millisecondsSinceEpoch
-    };
-
-    _socket.emit('message', jsonEncode(data));
+      'time': time.millisecondsSinceEpoch,
+    });
+    final res = await http.post(url, headers: headers, body: body);
+    if (res.statusCode == 200) {
+      return true;
+    }
+    return false;
   }
 
-  void dispose() {
-    _streamController.close();
-    _socket.dispose();
+  @override
+  Future<List<ChatModel>> getAllChat() async {
+    final url = Uri.parse('http://localhost:1234');
+
+    final res = await http.get(url);
+    if (res.statusCode == 200) {
+      return (jsonDecode(res.body) as List)
+          .map<ChatModel>((chat) => ChatModel.fromMap(chat))
+          .toList();
+    } else {
+      throw Failure('Something Went Error');
+    }
+  }
+
+  @override
+  Stream<void> listonOnChat() {
+    return _streamController.stream;
   }
 }

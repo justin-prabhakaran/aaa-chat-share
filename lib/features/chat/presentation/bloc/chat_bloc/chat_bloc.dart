@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/core/usecase.dart';
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
+import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_chat.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/listen_chat.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/send_chat.dart';
 
@@ -14,17 +15,21 @@ part 'chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final SendChat _sendChat;
-  final ListenChat _listenChat;
+  final ListenOnChat _listenOnChat;
+  final GetAllChat _getAllChat;
   List<Chat> chats = [];
 
-  ChatBloc({
-    required SendChat sendChat,
-    required ListenChat listenChat,
-  })  : _sendChat = sendChat,
-        _listenChat = listenChat,
+  ChatBloc(
+      {required SendChat sendChat,
+      required ListenOnChat listenOnChat,
+      required GetAllChat getAllChat})
+      : _sendChat = sendChat,
+        _listenOnChat = listenOnChat,
+        _getAllChat = getAllChat,
         super(ChatInitial()) {
-    on<ChatStartedEvent>(_chatStartedEvent);
-    on<ChatSendMyMessage>(_chatSendMyMessage);
+    on<ChatSendMyMessageEvent>(_chatSendMyMessageEvent);
+    on<ChatGetAllChatEvent>(_chatGetAllChatEvent);
+    on<ChatStartedListenEvent>(_chatStartedListenEvent);
   }
 
   @override
@@ -45,33 +50,48 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     super.onTransition(transition);
   }
 
-  FutureOr<void> _chatStartedEvent(
-      ChatStartedEvent event, Emitter<ChatState> emit) {
-    var listen = _listenChat(NoParams());
-    listen.fold(
-      (failure) {
+  FutureOr<void> _chatSendMyMessageEvent(
+      ChatSendMyMessageEvent event, Emitter<ChatState> emit) async {
+    try {
+      final res = await _sendChat(SendChatParams(
+          message: event.chat.message,
+          userId: event.chat.userName,
+          time: event.chat.time));
+      res.fold((failure) {
         emit(ChatFailureState(failure: failure));
-      },
-      (streamc) async {
-        await emit.onEach<Chat>(streamc.stream,
-            onData: (chat) => ChatRecievedState(chats: List<Chat>.from(chats)));
-      },
-    );
+      }, (success) {
+        if (success) {
+          //i dont know what to do
+          emit(ChatFailureState(failure: Failure('Successfully Send !')));
+        }
+      });
+    } catch (e) {
+      emit(ChatFailureState(failure: Failure(e.toString())));
+    }
   }
 
-  FutureOr<void> _chatSendMyMessage(
-      ChatSendMyMessage event, Emitter<ChatState> emit) {
-    var res = _sendChat(
-      SendChatParams(
-        message: event.chat.message,
-        userName: event.chat.userName,
-        time: event.chat.time,
-      ),
-    );
-    res.fold((failure) {
-      emit(ChatFailureState(failure: failure));
-    }, (_) {
-      //this will be handled on stream listenor because socket.io will emit msg to all user include this socket
-    });
+  FutureOr<void> _chatGetAllChatEvent(
+      ChatGetAllChatEvent event, Emitter<ChatState> emit) async {
+    try {
+      final res = await _getAllChat(NoParams());
+      res.fold((failure) => emit(ChatFailureState(failure: failure)),
+          (chats) => emit(ChatRecievedState(chats: chats)));
+    } catch (e) {
+      emit(ChatFailureState(failure: Failure(e.toString())));
+    }
+  }
+
+  FutureOr<void> _chatStartedListenEvent(
+      ChatStartedListenEvent event, Emitter<ChatState> emit) {
+    try {
+      final res = _listenOnChat(NoParams());
+      res.fold((failure) => emit(ChatFailureState(failure: failure)), (stream) {
+        stream.listen((_) {
+          add(ChatGetAllChatEvent());
+        });
+      });
+    } catch (e) {
+      emit(ChatFailureState(failure: Failure(e.toString())));
+    }
   }
 }

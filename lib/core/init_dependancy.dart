@@ -136,9 +136,6 @@ void initDepends() {
     )
 
     //Addons
-    ..registerLazySingleton<StreamController<ChatModel>>(
-      () => StreamController<ChatModel>(),
-    )
     ..registerLazySingleton<StreamController<void>>(
       () => StreamController<void>(),
     )

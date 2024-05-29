@@ -142,9 +142,9 @@ app.post('/chat', async (req, res) => {
             const rs = await saveChat(user_id, message, time);
             if (rs) {
                 io.emit('updatemessage');
-                return res.status(200).json(true);
+                return res.status(200).json();
             }
-            return res.status(500).json(false);
+            return res.status(500).json();
         } catch (e) {
             console.error(e);
             return res.status(500).json({
@@ -164,9 +164,9 @@ app.get('/chat', async (req, res) => {
         const rs = await Chat.find().sort({ time: -1 });
         const newrs = Promise.all(rs.map(async (val) => {
             console.log(val);
-            const user = await User.findById(val.user_id);
+            // const user = await User.findById(val.user_id);
             return {
-                user_name: user?.user_name ?? 'null',
+                user_name: val.user_name,
                 message: val.message,
                 chat_id: val.chat_id,
                 time: val.time,
