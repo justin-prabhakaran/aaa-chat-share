@@ -12,14 +12,12 @@ abstract class ChatRemoteDataSource {
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
-  final StreamController<void> _streamController;
+  final StreamController<void> _streamController = StreamController<void>();
   final io.Socket _socket;
 
-  ChatRemoteDataSourceImpl(
-      {required io.Socket socket,
-      required StreamController<void> streamController})
-      : _socket = socket,
-        _streamController = streamController {
+  ChatRemoteDataSourceImpl({
+    required io.Socket socket,
+  }) : _socket = socket {
     _socket.on('connect', (_) {
       print('Message :: Connected to chat socket server');
     });
@@ -39,7 +37,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
   @override
   Future<bool> sendChat(String message, String userName, DateTime time) async {
-    final url = Uri.parse('http://localhost:1234');
+    final url = Uri.parse('http://localhost:1234/chat');
     final headers = {"Accept": "*/*", "Content-Type": "application/json"};
     final body = jsonEncode({
       'message': message,
@@ -55,7 +53,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
   @override
   Future<List<ChatModel>> getAllChat() async {
-    final url = Uri.parse('http://localhost:1234');
+    final url = Uri.parse('http://localhost:1234/chat');
 
     final res = await http.get(url);
     if (res.statusCode == 200) {

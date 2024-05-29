@@ -15,6 +15,7 @@ import 'package:aaa_chat_share/features/chat/data/repositories/chat_repository_i
 import 'package:aaa_chat_share/features/chat/data/repositories/file_repository_impl.dart';
 import 'package:aaa_chat_share/features/chat/domain/repositories/chat_repository.dart';
 import 'package:aaa_chat_share/features/chat/domain/repositories/file_repository.dart';
+import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_chat.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_files.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/listen_chat.dart';
 import 'package:aaa_chat_share/features/chat/domain/usecases/listen_files.dart';
@@ -81,7 +82,8 @@ void initDepends() {
     )
     ..registerLazySingleton<FileRemoteDataSource>(
       () => FileRemoteDataSourceImpl(
-          streamController: serviceLocator(), socket: serviceLocator()),
+        socket: serviceLocator(),
+      ),
     )
 
     //Chat Use Cases
@@ -91,11 +93,15 @@ void initDepends() {
       ),
     )
     ..registerFactory(
-      () => ListenChat(
+      () => ListenOnChat(
         chatRepository: serviceLocator(),
       ),
     )
-
+    ..registerFactory(
+      () => GetAllChat(
+        chatRepository: serviceLocator(),
+      ),
+    )
     //Chat Repositories
     ..registerFactory<ChatRepository>(
       () => ChatRepositoryImpl(
@@ -104,7 +110,8 @@ void initDepends() {
     )
     ..registerLazySingleton<ChatRemoteDataSource>(
       () => ChatRemoteDataSourceImpl(
-          socket: serviceLocator(), streamController: serviceLocator()),
+        socket: serviceLocator(),
+      ),
     )
 
     //Blocs
@@ -126,7 +133,8 @@ void initDepends() {
     ..registerLazySingleton(
       () => ChatBloc(
         sendChat: serviceLocator(),
-        listenChat: serviceLocator(),
+        listenOnChat: serviceLocator(),
+        getAllChat: serviceLocator(),
       ),
     )
 
@@ -136,9 +144,6 @@ void initDepends() {
     )
 
     //Addons
-    ..registerLazySingleton<StreamController<void>>(
-      () => StreamController<void>(),
-    )
     ..registerLazySingleton<Socket>(
       () => io(
         'http://localhost:1234',

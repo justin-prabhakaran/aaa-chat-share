@@ -16,14 +16,10 @@ abstract interface class FileRemoteDataSource {
 }
 
 class FileRemoteDataSourceImpl implements FileRemoteDataSource {
-  final StreamController<void> _streamController;
+  final StreamController<void> _streamController = StreamController<void>();
   final io.Socket _socket;
 
-  FileRemoteDataSourceImpl(
-      {required StreamController<void> streamController,
-      required io.Socket socket})
-      : _streamController = streamController,
-        _socket = socket {
+  FileRemoteDataSourceImpl({required io.Socket socket}) : _socket = socket {
     _socket.on('connect', (_) {
       print('Connected to file socket server');
     });
