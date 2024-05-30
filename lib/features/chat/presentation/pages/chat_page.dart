@@ -248,13 +248,12 @@ class _ChatPageState extends State<ChatPage> {
                                 shrinkWrap: true,
                                 itemCount: state.chats.length,
                                 itemBuilder: (context, index) {
-                                  print(state.chats);
+                                  // print(state.chats);
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20),
                                     child: MessageWidget(
                                       userName: user.userName,
-                                      isMe: state.chats[index].isMe,
                                       content: state.chats[index].message,
                                       time: state.chats[index].time,
                                     ),
@@ -340,7 +339,7 @@ class _ChatPageState extends State<ChatPage> {
       context.read<ChatBloc>().add(
             ChatSendMyMessageEvent(
               chat: Chat(
-                isMe: true,
+               
                 message: message,
                 time: DateTime.now(),
                 userName: user.userName,

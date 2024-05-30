@@ -5,16 +5,16 @@ class ChatModel extends Chat {
       {required super.message,
       required super.time,
       required super.userName,
-      super.isMe = false});
+      });
 
   ChatModel copyWith({
     String? message,
     DateTime? time,
     String? userName,
-    bool? isMe,
+    
   }) {
     return ChatModel(
-      isMe: isMe ?? this.isMe,
+     
       message: message ?? this.message,
       time: time ?? this.time,
       userName: userName ?? this.userName,
