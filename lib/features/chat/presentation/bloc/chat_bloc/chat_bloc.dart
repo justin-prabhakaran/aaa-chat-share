@@ -61,11 +61,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         emit(ChatFailureState(failure: failure));
       }, (success) {
         if (success) {
-          //i dont know what to do
-          emit(ChatFailureState(failure: Failure('Successfully Send !')));
+          chats.add(event.chat);
+          print('message sended : ${event.chat.message}');
+          emit(ChatRecievedState(chats: List<Chat>.from(chats)));
         }
       });
     } catch (e) {
+      print(e.toString());
       emit(ChatFailureState(failure: Failure(e.toString())));
     }
   }
@@ -74,9 +76,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       ChatGetAllChatEvent event, Emitter<ChatState> emit) async {
     try {
       final res = await _getAllChat(NoParams());
-      res.fold((failure) => emit(ChatFailureState(failure: failure)),
-          (chats) => emit(ChatRecievedState(chats: chats)));
+      res.fold((failure) => emit(ChatFailureState(failure: failure)), (schats) {
+        chats = List.from(schats);
+        emit(ChatRecievedState(chats: schats));
+      });
     } catch (e) {
+      print(e.toString());
       emit(ChatFailureState(failure: Failure(e.toString())));
     }
   }
@@ -86,11 +91,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       final res = _listenOnChat(NoParams());
       res.fold((failure) => emit(ChatFailureState(failure: failure)), (stream) {
-        stream.listen((_) {
-          add(ChatGetAllChatEvent());
+        stream.listen((chat) {
+          chats.add(chat);
+          emit(ChatRecievedState(chats: List<Chat>.from(chats)));
+          // add(ChatGetAllChatEvent());
         });
       });
     } catch (e) {
+      print(e.toString());
       emit(ChatFailureState(failure: Failure(e.toString())));
     }
   }
