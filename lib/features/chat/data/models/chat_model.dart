@@ -1,20 +1,18 @@
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
 
 class ChatModel extends Chat {
-  ChatModel(
-      {required super.message,
-      required super.time,
-      required super.userName,
-      super.isMe = false});
+  ChatModel({
+    required super.message,
+    required super.time,
+    required super.userName,
+  });
 
   ChatModel copyWith({
     String? message,
     DateTime? time,
     String? userName,
-    bool? isMe,
   }) {
     return ChatModel(
-      isMe: isMe ?? this.isMe,
       message: message ?? this.message,
       time: time ?? this.time,
       userName: userName ?? this.userName,
@@ -25,7 +23,7 @@ class ChatModel extends Chat {
     return <String, dynamic>{
       'message': message,
       'time': time.millisecondsSinceEpoch,
-      'userName': userName,
+      'user_name': userName,
     };
   }
 

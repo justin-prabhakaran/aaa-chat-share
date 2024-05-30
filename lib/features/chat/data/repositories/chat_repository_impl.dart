@@ -16,7 +16,7 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<Either<Failure, List<Chat>>> getAllChat() async {
     try {
-      return right(await _chatRemoteDataSource.getAllChat());
+      return right(await _chatRemoteDataSource.getAllChat() as List<Chat>);
     } catch (e) {
       return left(Failure(e.toString()));
     }
@@ -33,9 +33,9 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Either<Failure, Stream<void>> listonOnChat() {
+  Either<Failure, Stream<Chat>> listonOnChat() {
     try {
-      return right(_chatRemoteDataSource.listonOnChat());
+      return right(_chatRemoteDataSource.listenOnChat());
     } catch (e) {
       return left(Failure(e.toString()));
     }

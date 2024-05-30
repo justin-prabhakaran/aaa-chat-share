@@ -135,13 +135,23 @@ app.get('/upload', async (req, res) => {
 app.post('/chat', async (req, res) => {
 
     console.log(req.body);
-    const { user_name, message, time } = req.body;
+    const { user_name, message, time, socketId } = req.body;
 
-    if (user_name && message && time) {
+    if (user_name && message && time && socketId) {
         try {
             const rs = await saveChat(user_name, message, time);
             if (rs) {
-                io.emit('updatemessage');
+
+                io.sockets.sockets.forEach((soc) => {
+                    if (soc.id !== socketId) {
+                        soc.emit('updatemessage', {
+                            user_name: user_name,
+                            message: message,
+                            time: time
+                        });
+                    }
+                });
+
                 return res.status(200).json();
             }
             return res.status(500).json();
@@ -161,10 +171,8 @@ app.post('/chat', async (req, res) => {
 
 app.get('/chat', async (req, res) => {
     try {
-        const rs = await Chat.find().sort({ time: -1 });
+        const rs = await Chat.find().sort({ time: 1 });
         const newrs = await Promise.all(rs.map(async (val) => {
-            // console.log(val);
-            // const user = await User.findById(val.user_id);
             return {
                 user_name: val.user_name,
                 message: val.message,

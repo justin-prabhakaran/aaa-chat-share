@@ -8,5 +8,5 @@ abstract interface class ChatRepository {
   Future<Either<Failure, bool>> sendChat(
       String message, String userId, DateTime time);
   Future<Either<Failure, List<Chat>>> getAllChat();
-  Either<Failure, Stream<void>> listonOnChat();
+  Either<Failure, Stream<Chat>> listonOnChat();
 }
