@@ -13,6 +13,17 @@ class ChatSendMyMessageEvent extends ChatEvent {
   final Chat chat;
 
   const ChatSendMyMessageEvent({required this.chat});
+
+  @override
+  List<Chat> get props => [chat];
+}
+
+class ChatRecievedEvent extends ChatEvent {
+  final Chat chat;
+  const ChatRecievedEvent({required this.chat});
+
+  @override
+  List<Chat> get props => [chat];
 }
 
 class ChatStartedListenEvent extends ChatEvent {}

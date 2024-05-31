@@ -5,10 +5,11 @@ import morgan from 'morgan';
 import cors from 'cors'
 import { Server } from 'socket.io';
 import { saveFile, saveUser, File, User, FileDoc, saveChat, Chat } from './mongo';
-import multer from 'multer';
+import multer, { memoryStorage } from 'multer';
 import path from 'path';
 
 import dotenv from 'dotenv';
+import { ConnectionStates } from 'mongoose';
 
 dotenv.config()
 
@@ -132,42 +133,32 @@ app.get('/upload', async (req, res) => {
 
 
 
-app.post('/chat', async (req, res) => {
+// app.post('/chat', async (req, res) => {
 
-    console.log(req.body);
-    const { user_name, message, time, socketId } = req.body;
+//     console.log(req.body);
+//     const { user_name, message, time } = req.body;
 
-    if (user_name && message && time && socketId) {
-        try {
-            const rs = await saveChat(user_name, message, time);
-            if (rs) {
+//     if (user_name && message && time) {
+//         try {
+//             const rs = await saveChat(user_name, message, time);
+//             if (rs) {
+//                 io.emit('updatemessage');
+//                 return res.status(200).json();
+//             }
+//             return res.status(500).json();
+//         } catch (e) {
+//             console.error(e);
+//             return res.status(500).json({
+//                 error: 'Internal Server Eroor'
+//             });
+//         }
+//     } else {
+//         return res.status(400).json({
+//             error: 'Missing Paramerters'
+//         });
+//     }
 
-                io.sockets.sockets.forEach((soc) => {
-                    if (soc.id !== socketId) {
-                        soc.emit('updatemessage', {
-                            user_name: user_name,
-                            message: message,
-                            time: time
-                        });
-                    }
-                });
-
-                return res.status(200).json();
-            }
-            return res.status(500).json();
-        } catch (e) {
-            console.error(e);
-            return res.status(500).json({
-                error: 'Internal Server Eroor'
-            });
-        }
-    } else {
-        return res.status(400).json({
-            error: 'Missing Paramerters'
-        });
-    }
-
-});
+// });
 
 app.get('/chat', async (req, res) => {
     try {
@@ -193,7 +184,17 @@ app.get('/chat', async (req, res) => {
 
 
 io.on('connection', (socket) => {
-    console.log(`User Connected : ${socket.conn.remoteAddress}`)
+    console.log(`User Connected : ${socket.conn.remoteAddress}`);
+
+
+    socket.on('message', async (data) => {
+        console.log(io.sockets.sockets.size);
+        const { user_name, message, time } = JSON.parse(data);
+        const rs = await saveChat(user_name, message, time);
+        console.log(JSON.parse(data));
+
+        socket.broadcast.emit('message', data);
+    });
 });
 
 

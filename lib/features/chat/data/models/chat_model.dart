@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
+import 'package:flutter/foundation.dart';
 
 class ChatModel extends Chat {
   ChatModel({
@@ -35,7 +38,15 @@ class ChatModel extends Chat {
     );
   }
 
+  String toJson() => json.encode(toMap());
+
+  factory ChatModel.fromJson(String source) =>
+      ChatModel.fromMap(json.decode(source) as Map<String, dynamic>);
   @override
   String toString() =>
       'Chat(message: $message, time: $time, userName: $userName)';
+
+  Chat toEntity() {
+    return Chat(message: message, time: time, userName: userName);
+  }
 }
