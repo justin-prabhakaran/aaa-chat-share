@@ -1,7 +1,8 @@
-import 'package:aaa_chat_share/core/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+
+import '../../../../core/theme.dart';
 
 class MessageWidget extends StatelessWidget {
   final String userName;

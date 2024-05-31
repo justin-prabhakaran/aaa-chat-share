@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
-import 'package:flutter/foundation.dart';
+import '../../domain/entities/chat.dart';
 
 class ChatModel extends Chat {
   ChatModel({

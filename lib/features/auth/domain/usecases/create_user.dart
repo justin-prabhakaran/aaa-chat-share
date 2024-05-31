@@ -1,8 +1,9 @@
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/core/usecase.dart';
-import 'package:aaa_chat_share/core/entities/user_entity.dart';
-import 'package:aaa_chat_share/features/auth/domain/repositories/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
+
+import '../../../../core/entities/user_entity.dart';
+import '../../../../core/failure.dart';
+import '../../../../core/usecase.dart';
+import '../repositories/auth_repository.dart';
 
 class CreateUser implements UseCase<User, CreateUserParam> {
   final AuthRepository _authRepository;

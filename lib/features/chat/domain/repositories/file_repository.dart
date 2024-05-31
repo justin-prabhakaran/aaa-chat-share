@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/features/chat/domain/entities/file.dart';
 import 'package:fpdart/fpdart.dart';
+
+import '../../../../core/failure.dart';
+import '../entities/file.dart';
 
 abstract interface class FileRepository {
   Future<Either<Failure, List<File>>> getAllFiles();

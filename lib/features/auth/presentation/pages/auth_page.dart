@@ -1,9 +1,10 @@
-import 'package:aaa_chat_share/core/snack_bar.dart';
-import 'package:aaa_chat_share/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:aaa_chat_share/features/auth/presentation/widgets/auth_success_page_widget.dart';
-import 'package:aaa_chat_share/features/chat/presentation/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/snack_bar.dart';
+import '../../../chat/presentation/pages/chat_page.dart';
+import '../bloc/auth_bloc.dart';
+import '../widgets/auth_success_page_widget.dart';
 
 class AuthPage extends StatelessWidget {
   final TextEditingController _textEditingController = TextEditingController();

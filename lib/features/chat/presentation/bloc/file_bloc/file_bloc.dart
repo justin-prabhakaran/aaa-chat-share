@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/core/usecase.dart';
-import 'package:aaa_chat_share/features/chat/domain/entities/file.dart';
-import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_files.dart';
-import 'package:aaa_chat_share/features/chat/domain/usecases/listen_files.dart';
-import 'package:aaa_chat_share/features/chat/domain/usecases/upload_file.dart';
+import '../../../../../core/failure.dart';
+import '../../../../../core/usecase.dart';
+import '../../../domain/entities/file.dart';
+import '../../../domain/usecases/get_all_files.dart';
+import '../../../domain/usecases/listen_files.dart';
+import '../../../domain/usecases/upload_file.dart';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

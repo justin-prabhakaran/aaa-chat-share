@@ -1,4 +1,4 @@
-import 'package:aaa_chat_share/core/entities/user_entity.dart';
+import '../../../../core/entities/user_entity.dart';
 
 class UserModle extends User {
   UserModle({required super.userId, required super.userName});

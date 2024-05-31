@@ -1,8 +1,9 @@
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/core/usecase.dart';
-import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
-import 'package:aaa_chat_share/features/chat/domain/repositories/chat_repository.dart';
 import 'package:fpdart/fpdart.dart';
+
+import '../../../../core/failure.dart';
+import '../../../../core/usecase.dart';
+import '../entities/chat.dart';
+import '../repositories/chat_repository.dart';
 
 class ListenOnChat implements UseCaseNoFuture<Stream<Chat>, NoParams> {
   final ChatRepository _chatRepository;

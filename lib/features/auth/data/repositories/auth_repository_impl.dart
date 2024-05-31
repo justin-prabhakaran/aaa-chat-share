@@ -1,9 +1,10 @@
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/features/auth/data/datasources/remote_data_resoure.dart';
-import 'package:aaa_chat_share/features/auth/data/models/user_model.dart';
-import 'package:aaa_chat_share/core/entities/user_entity.dart';
-import 'package:aaa_chat_share/features/auth/domain/repositories/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
+
+import '../../../../core/entities/user_entity.dart';
+import '../../../../core/failure.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../datasources/remote_data_resoure.dart';
+import '../models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final RemoteDataSource _remoteDataSource;
@@ -27,7 +28,6 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final res = await _remoteDataSource.isUserLoggedIn();
       if (res.isNotEmpty) {
-        print(UserModle.fromMap(res));
         return right(UserModle.fromMap(res));
       }
       return right(null);
