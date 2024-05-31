@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/core/usecase.dart';
-import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
-import 'package:aaa_chat_share/features/chat/domain/usecases/get_all_chat.dart';
-import 'package:aaa_chat_share/features/chat/domain/usecases/listen_chat.dart';
-import 'package:aaa_chat_share/features/chat/domain/usecases/send_chat.dart';
+import '../../../../../core/failure.dart';
+import '../../../../../core/usecase.dart';
+import '../../../domain/entities/chat.dart';
+import '../../../domain/usecases/get_all_chat.dart';
+import '../../../domain/usecases/listen_chat.dart';
+import '../../../domain/usecases/send_chat.dart';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,17 +33,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<ChatRecievedEvent>(_chatRecievedEvent);
   }
 
-  @override
-  void onEvent(ChatEvent event) {
-    print(event.toString());
-    super.onEvent(event);
-  }
-
-  @override
-  void onTransition(Transition<ChatEvent, ChatState> transition) {
-    print(transition.toString());
-    super.onTransition(transition);
-  }
 
   FutureOr<void> _chatSendMyMessageEvent(
       ChatSendMyMessageEvent event, Emitter<ChatState> emit) {
@@ -55,12 +44,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       res.fold((failure) {
         emit(ChatFailureState(failure: failure));
       }, (success) {
-        print('message sended'); // this is prints correctly
         add(ChatRecievedEvent(chat: event.chat));
 
       });
     } catch (e) {
-      print(e.toString());
       emit(ChatFailureState(failure: Failure(e.toString())));
     }
   }
@@ -76,7 +63,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
       });
     } catch (e) {
-      print(e.toString());
       emit(ChatFailureState(failure: Failure(e.toString())));
     }
   }

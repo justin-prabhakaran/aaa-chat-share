@@ -1,11 +1,12 @@
-import 'package:aaa_chat_share/core/cubit/app_auth_cubit.dart';
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/core/usecase.dart';
-import 'package:aaa_chat_share/features/auth/domain/usecases/create_user.dart';
-import 'package:aaa_chat_share/features/auth/domain/usecases/is_user_logged_in.dart';
-import 'package:aaa_chat_share/features/auth/domain/usecases/save_user_logged_in.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/cubit/app_auth_cubit.dart';
+import '../../../../core/failure.dart';
+import '../../../../core/usecase.dart';
+import '../../domain/usecases/create_user.dart';
+import '../../domain/usecases/is_user_logged_in.dart';
+import '../../domain/usecases/save_user_logged_in.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';

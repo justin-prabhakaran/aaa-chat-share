@@ -1,6 +1,7 @@
-import 'package:aaa_chat_share/core/entities/user_entity.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../entities/user_entity.dart';
 
 part 'app_auth_state.dart';
 
@@ -9,7 +10,6 @@ class AppAuthCubit extends Cubit<AppAuthState> {
 
   void updateUser(User? user) {
     if (user == null) {
-      print('null is given.......');
       emit(AppAuthInitial());
     } else {
       emit(

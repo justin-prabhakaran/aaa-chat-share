@@ -1,13 +1,15 @@
-import 'package:aaa_chat_share/core/cubit/app_auth_cubit.dart';
-import 'package:aaa_chat_share/core/entities/user_entity.dart';
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/core/snack_bar.dart';
-import 'package:aaa_chat_share/core/theme.dart';
-import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
-import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
-import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
-import 'package:aaa_chat_share/features/chat/presentation/widgets/file_widget.dart';
-import 'package:aaa_chat_share/features/chat/presentation/widgets/message_widget.dart';
+import '../../domain/entities/file.dart';
+
+import '../../../../core/cubit/app_auth_cubit.dart';
+import '../../../../core/entities/user_entity.dart';
+import '../../../../core/failure.dart';
+import '../../../../core/snack_bar.dart';
+import '../../../../core/theme.dart';
+import '../../domain/entities/chat.dart';
+import '../bloc/chat_bloc/chat_bloc.dart';
+import '../bloc/file_bloc/file_bloc.dart';
+import '../widgets/file_widget.dart';
+import '../widgets/message_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,7 +37,11 @@ class _ChatPageState extends State<ChatPage> {
     if (state is AppAuthLoggedInState) {
       user = state.user;
     } else {
-      print("state is not logged in............");
+      context.read<FileBloc>().add(
+            FileThrowErrorEvent(
+              failure: Failure('User Not Found !!! , May be Logged Out'),
+            ),
+          );
     }
 
     _textEditingController = TextEditingController();
@@ -157,7 +163,6 @@ class _ChatPageState extends State<ChatPage> {
                           },
                           listener: (context, state) {
                             if (state is FileFailureState) {
-                              print(state.failure.message);
                               showSnackBar(context, state.failure.message);
                             }
                           },
@@ -178,7 +183,6 @@ class _ChatPageState extends State<ChatPage> {
                             );
 
                             if (res != null) {
-                              // print(res.files.first.bytes);
                               Uint8List bytes = res.files.first.bytes!;
                               String fileName = res.files.first.name;
                               if (context.mounted) {
@@ -272,9 +276,7 @@ class _ChatPageState extends State<ChatPage> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20),
                                     child: MessageWidget(
-
                                       userName: state.chats[index].userName,
-
                                       content: state.chats[index].message,
                                       time: state.chats[index].time,
                                     ),

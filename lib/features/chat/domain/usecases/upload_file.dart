@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/core/usecase.dart';
-import 'package:aaa_chat_share/features/chat/domain/repositories/file_repository.dart';
 import 'package:fpdart/fpdart.dart';
+
+import '../../../../core/failure.dart';
+import '../../../../core/usecase.dart';
+import '../repositories/file_repository.dart';
 
 class UploadFile implements UseCase<bool, UploadFileParams> {
   final FileRepository _fileRepository;

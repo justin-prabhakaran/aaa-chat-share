@@ -1,7 +1,8 @@
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/core/usecase.dart';
-import 'package:aaa_chat_share/features/chat/domain/repositories/chat_repository.dart';
 import 'package:fpdart/fpdart.dart';
+
+import '../../../../core/failure.dart';
+import '../../../../core/usecase.dart';
+import '../repositories/chat_repository.dart';
 
 class SendChat implements UseCaseNoFuture<void, SendChatParams> {
   final ChatRepository _chatRepository;

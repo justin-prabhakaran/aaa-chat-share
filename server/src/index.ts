@@ -1,15 +1,14 @@
-import bodyParser, { json } from 'body-parser';
+import bodyParser from 'body-parser';
 import express from 'express';
 import http from 'http';
 import morgan from 'morgan';
 import cors from 'cors'
 import { Server } from 'socket.io';
-import { saveFile, saveUser, File, User, FileDoc, saveChat, Chat } from './mongo';
-import multer, { memoryStorage } from 'multer';
+import { saveFile, saveUser, File, User, saveChat, Chat } from './mongo';
+import multer from 'multer';
 import path from 'path';
 
 import dotenv from 'dotenv';
-import { ConnectionStates } from 'mongoose';
 
 dotenv.config()
 

@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/features/chat/data/datasources/chat_remote_datasource.dart';
-import 'package:aaa_chat_share/features/chat/data/models/chat_model.dart';
-import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
-import 'package:aaa_chat_share/features/chat/domain/repositories/chat_repository.dart';
 import 'package:fpdart/fpdart.dart';
+
+import '../../../../core/failure.dart';
+import '../../domain/entities/chat.dart';
+import '../../domain/repositories/chat_repository.dart';
+import '../datasources/chat_remote_datasource.dart';
+import '../models/chat_model.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource _chatRemoteDataSource;
@@ -29,15 +30,7 @@ class ChatRepositoryImpl implements ChatRepository {
     }
   }
 
-  // @override
-  // Future<Either<Failure, bool>> sendChat(
-  //     String message, String userId, DateTime time) async {
-  //   try {
-  //     return right(await _chatRemoteDataSource.sendChat(message, userId, time));
-  //   } catch (e) {
-  //     return left(Failure(e.toString()));
-  //   }
-  // }
+
 
   @override
   Either<Failure, Stream<Chat>> listonOnChat() {

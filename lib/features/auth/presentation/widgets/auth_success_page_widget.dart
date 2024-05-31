@@ -1,8 +1,9 @@
-import 'package:aaa_chat_share/core/theme.dart';
-import 'package:aaa_chat_share/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../../../core/theme.dart';
+import '../bloc/auth_bloc.dart';
 
 class AuthSuccessWidget extends StatelessWidget {
   const AuthSuccessWidget({

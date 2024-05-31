@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'dart:typed_data';
 
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/features/chat/data/models/file_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as io;
+
+import '../../../../core/failure.dart';
+import '../models/file_model.dart';
 
 abstract interface class FileRemoteDataSource {
   Future<List<FileModle>> getAllFiles();
@@ -16,16 +17,17 @@ abstract interface class FileRemoteDataSource {
 }
 
 class FileRemoteDataSourceImpl implements FileRemoteDataSource {
+  var serverUrlBase = dotenv.env['SERVER_URL_BASE'];
   final StreamController<void> _streamController = StreamController<void>();
   final io.Socket _socket;
 
   FileRemoteDataSourceImpl({required io.Socket socket}) : _socket = socket {
     _socket.on('connect', (_) {
-      print('Connected to file socket server');
+      print('Message :: Connected to file socket server');
     });
 
     _socket.on('disconnect', (_) {
-      print('Disconnected from file socket server');
+      print('Message :: Disconnected from file socket server');
     });
 
     _socket.on('updatefiles', (_) {
@@ -39,7 +41,7 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
 
   @override
   Future<List<FileModle>> getAllFiles() async {
-    final url = Uri.parse('http://localhost:1234/upload');
+    final url = Uri.parse('$serverUrlBase/upload');
     var res = await http.get(url);
     if (res.statusCode == 200) {
       var jsnonList = jsonDecode(res.body) as List;
@@ -55,7 +57,7 @@ class FileRemoteDataSourceImpl implements FileRemoteDataSource {
   @override
   Future<bool> upladFile(
       Uint8List bytes, String userId, String fileName) async {
-    final url = Uri.parse('http://localhost:1234/upload');
+    final url = Uri.parse('$serverUrlBase/upload');
     var req = http.MultipartRequest('post', url);
     req.fields['file_size'] = bytes.length.toString();
     req.fields['user_id'] = userId;

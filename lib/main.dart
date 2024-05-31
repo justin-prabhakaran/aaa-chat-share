@@ -1,15 +1,17 @@
-import 'package:aaa_chat_share/core/cubit/app_auth_cubit.dart';
-import 'package:aaa_chat_share/core/init_dependancy.dart';
-import 'package:aaa_chat_share/core/theme.dart';
-import 'package:aaa_chat_share/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:aaa_chat_share/features/auth/presentation/pages/auth_page.dart';
-import 'package:aaa_chat_share/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
-import 'package:aaa_chat_share/features/chat/presentation/bloc/file_bloc/file_bloc.dart';
-import 'package:aaa_chat_share/features/chat/presentation/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+import 'core/cubit/app_auth_cubit.dart';
+import 'core/init_dependancy.dart';
+import 'core/theme.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/pages/auth_page.dart';
+import 'features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'features/chat/presentation/bloc/file_bloc/file_bloc.dart';
+import 'features/chat/presentation/pages/chat_page.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   initDepends();
   runApp(
@@ -31,6 +33,7 @@ void main() {
       child: const MyApp(),
     ),
   );
+  await dotenv.load(fileName: '.env');
 }
 
 class MyApp extends StatefulWidget {
@@ -57,10 +60,8 @@ class _MyAppState extends State<MyApp> {
               return const ChatPage();
             } else if (state is AppAuthInitial) {
               return AuthPage();
-            } else {
-              print("Something wrong !!!!");
-              return AuthPage();
             }
+            return AuthPage();
           },
         ));
   }

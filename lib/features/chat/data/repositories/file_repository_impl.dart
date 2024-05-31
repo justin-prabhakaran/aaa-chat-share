@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:aaa_chat_share/core/failure.dart';
-import 'package:aaa_chat_share/features/chat/data/datasources/file_remote_datasource.dart';
-import 'package:aaa_chat_share/features/chat/domain/entities/file.dart';
-import 'package:aaa_chat_share/features/chat/domain/repositories/file_repository.dart';
 import 'package:fpdart/fpdart.dart';
+
+import '../../../../core/failure.dart';
+import '../../domain/entities/file.dart';
+import '../../domain/repositories/file_repository.dart';
+import '../datasources/file_remote_datasource.dart';
 
 class FileRepositoryImpl implements FileRepository {
   final FileRemoteDataSource _remoteFileDataSource;

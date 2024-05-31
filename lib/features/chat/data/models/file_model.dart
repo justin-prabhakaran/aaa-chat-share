@@ -1,4 +1,4 @@
-import 'package:aaa_chat_share/features/chat/domain/entities/file.dart';
+import '../../domain/entities/file.dart';
 
 class FileModle extends File {
   FileModle(
