@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'cubit/app_auth_cubit.dart';
 import '../features/auth/data/datasources/remote_data_resoure.dart';
@@ -25,7 +26,7 @@ import 'package:get_it/get_it.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 final serviceLocator = GetIt.instance;
-
+var serverUrlBase = dotenv.env['SERVER_URL_BASE'];
 void initDepends() {
   serviceLocator
     //Auth Use Cases
@@ -144,7 +145,7 @@ void initDepends() {
     //Addons
     ..registerLazySingleton<Socket>(
       () => io(
-        'http://localhost:1234',
+        serverUrlBase ?? '',
         OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()

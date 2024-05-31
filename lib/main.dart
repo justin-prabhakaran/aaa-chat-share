@@ -12,6 +12,7 @@ import 'features/chat/presentation/bloc/file_bloc/file_bloc.dart';
 import 'features/chat/presentation/pages/chat_page.dart';
 
 void main() async {
+  await dotenv.load(fileName: '.env');
   WidgetsFlutterBinding.ensureInitialized();
   initDepends();
   runApp(
@@ -33,7 +34,6 @@ void main() async {
       child: const MyApp(),
     ),
   );
-  await dotenv.load(fileName: '.env');
 }
 
 class MyApp extends StatefulWidget {
