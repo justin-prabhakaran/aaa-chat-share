@@ -272,7 +272,9 @@ class _ChatPageState extends State<ChatPage> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20),
                                     child: MessageWidget(
+
                                       userName: state.chats[index].userName,
+
                                       content: state.chats[index].message,
                                       time: state.chats[index].time,
                                     ),

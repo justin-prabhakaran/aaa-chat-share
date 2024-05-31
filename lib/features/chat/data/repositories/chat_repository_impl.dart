@@ -17,11 +17,13 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<Either<Failure, List<Chat>>> getAllChat() async {
     try {
+
       List<ChatModel> chatModels = await _chatRemoteDataSource.getAllChat();
       List<Chat> chats = chatModels.map<Chat>((chatModel) {
         return chatModel.toEntity();
       }).toList();
       return right(chats);
+
     } catch (e) {
       return left(Failure(e.toString()));
     }
@@ -50,6 +52,7 @@ class ChatRepositoryImpl implements ChatRepository {
   Either<Failure, void> sendChat(String message, String userId, DateTime time) {
     try {
       return right(_chatRemoteDataSource.sendChat(message, userId, time));
+
     } catch (e) {
       return left(Failure(e.toString()));
     }

@@ -162,10 +162,8 @@ app.get('/upload', async (req, res) => {
 
 app.get('/chat', async (req, res) => {
     try {
-        const rs = await Chat.find().sort({ time: -1 });
+        const rs = await Chat.find().sort({ time: 1 });
         const newrs = await Promise.all(rs.map(async (val) => {
-            // console.log(val);
-            // const user = await User.findById(val.user_id);
             return {
                 user_name: val.user_name,
                 message: val.message,

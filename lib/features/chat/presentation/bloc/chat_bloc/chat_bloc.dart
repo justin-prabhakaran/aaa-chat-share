@@ -57,8 +57,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       }, (success) {
         print('message sended'); // this is prints correctly
         add(ChatRecievedEvent(chat: event.chat));
+
       });
     } catch (e) {
+      print(e.toString());
       emit(ChatFailureState(failure: Failure(e.toString())));
     }
   }
@@ -68,10 +70,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       final res = await _getAllChat(NoParams());
       res.fold((failure) => emit(ChatFailureState(failure: failure)), (schats) {
+
         chats = schats;
         emit(ChatRecievedState(chats: List.from(chats)));
+
       });
     } catch (e) {
+      print(e.toString());
       emit(ChatFailureState(failure: Failure(e.toString())));
     }
   }
@@ -103,6 +108,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       });
     } catch (e) {
       emit(ChatFailureState(failure: Failure()));
+
     }
   }
 

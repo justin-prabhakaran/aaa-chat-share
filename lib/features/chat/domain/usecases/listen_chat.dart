@@ -12,5 +12,6 @@ class ListenOnChat implements UseCaseNoFuture<Stream<Chat>, NoParams> {
   @override
   Either<Failure, Stream<Chat>> call(NoParams param) {
     return _chatRepository.listonOnChat();
+
   }
 }
