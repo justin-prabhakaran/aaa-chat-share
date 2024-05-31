@@ -15,6 +15,8 @@ class RemoteDataSourceImp implements RemoteDataSource {
   final _storage = const FlutterSecureStorage();
   static var tokenKey = dotenv.env['TOKEN_KEY_SECURE_STORAGE'] ?? '';
   var serverUrlBase = dotenv.env['SERVER_URL_BASE'] ?? '';
+  var serverUrlAuthority = dotenv.env['SERVER_URL_AUTHORITY'] ?? '';
+
   @override
   Future<Map<String, dynamic>> createUser(String userName) async {
     final url = Uri.parse('$serverUrlBase/user');
@@ -49,7 +51,7 @@ class RemoteDataSourceImp implements RemoteDataSource {
 
   Future<Map<String, dynamic>> getUser(String userId) async {
     final query = {'user_id': userId};
-    final url = Uri.http(serverUrlBase, '/user', query);
+    final url = Uri.http(serverUrlAuthority, '/user', query);
     final headers = {"Accept": "*/*", "Content-Type": "application/json"};
     final res = await http.get(url, headers: headers);
     final data = jsonDecode(res.body);
