@@ -25,6 +25,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  late ScrollController _scrollController;
   late TextEditingController _textEditingController;
   late FocusNode _focusNode;
   late User user;
@@ -38,6 +39,7 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     _textEditingController = TextEditingController();
+    _scrollController = ScrollController();
     context.read<ChatBloc>().add(ChatStartedListenEvent());
     context.read<FileBloc>().add(FileStartListenEvent());
     context.read<FileBloc>().add(FileGetAllEvent());
@@ -70,6 +72,7 @@ class _ChatPageState extends State<ChatPage> {
         return KeyEventResult.ignored;
       },
     );
+
     super.initState();
   }
 
@@ -166,13 +169,15 @@ class _ChatPageState extends State<ChatPage> {
                           onTap: () async {
                             FilePickerResult? res =
                                 await FilePicker.platform.pickFiles(
+                              type: FileType.any,
                               allowMultiple: false,
+                              withData: true,
                               onFileLoading: (status) {
                                 print(status.toString());
                               },
                             );
 
-                            if (res != null && res.files.first.bytes != null) {
+                            if (res != null) {
                               // print(res.files.first.bytes);
                               Uint8List bytes = res.files.first.bytes!;
                               String fileName = res.files.first.name;
@@ -237,23 +242,37 @@ class _ChatPageState extends State<ChatPage> {
                       const SizedBox(height: 10),
                       Expanded(
                         child: BlocConsumer<ChatBloc, ChatState>(
+                          buildWhen: (previous, current) =>
+                              current is ChatRecievedState,
                           listener: (context, state) {
                             if (state is ChatFailureState) {
                               showSnackBar(context, state.failure.message);
+                            } else if (state is ChatRecievedState) {
+                              WidgetsBinding.instance
+                                  .addPostFrameCallback((_) async {
+                                if (_scrollController.hasClients) {
+                                  await _scrollController.animateTo(
+                                      _scrollController
+                                          .position.maxScrollExtent,
+                                      duration:
+                                          const Duration(milliseconds: 600),
+                                      curve: Curves.easeInOut);
+                                }
+                              });
                             }
                           },
                           builder: (context, state) {
                             if (state is ChatRecievedState) {
                               return ListView.builder(
+                                controller: _scrollController,
                                 shrinkWrap: true,
                                 itemCount: state.chats.length,
                                 itemBuilder: (context, index) {
-                                  // print(state.chats);
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20),
                                     child: MessageWidget(
-                                      userName: user.userName,
+                                      userName: state.chats[index].userName,
                                       content: state.chats[index].message,
                                       time: state.chats[index].time,
                                     ),
@@ -339,7 +358,6 @@ class _ChatPageState extends State<ChatPage> {
       context.read<ChatBloc>().add(
             ChatSendMyMessageEvent(
               chat: Chat(
-               
                 message: message,
                 time: DateTime.now(),
                 userName: user.userName,

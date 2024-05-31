@@ -30,6 +30,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<ChatSendMyMessageEvent>(_chatSendMyMessageEvent);
     on<ChatGetAllChatEvent>(_chatGetAllChatEvent);
     on<ChatStartedListenEvent>(_chatStartedListenEvent);
+    on<ChatRecievedEvent>(_chatRecievedEvent);
   }
 
   @override
@@ -39,31 +40,23 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   }
 
   @override
-  void onChange(Change<ChatState> change) {
-    print(change.toString());
-    super.onChange(change);
-  }
-
-  @override
   void onTransition(Transition<ChatEvent, ChatState> transition) {
     print(transition.toString());
     super.onTransition(transition);
   }
 
   FutureOr<void> _chatSendMyMessageEvent(
-      ChatSendMyMessageEvent event, Emitter<ChatState> emit) async {
+      ChatSendMyMessageEvent event, Emitter<ChatState> emit) {
     try {
-      final res = await _sendChat(SendChatParams(
+      final res = _sendChat(SendChatParams(
           message: event.chat.message,
           userId: event.chat.userName,
           time: event.chat.time));
       res.fold((failure) {
         emit(ChatFailureState(failure: failure));
       }, (success) {
-        if (success) {
-          //i dont know what to do
-          emit(ChatFailureState(failure: Failure('Successfully Send !')));
-        }
+        print('message sended'); // this is prints correctly
+        add(ChatRecievedEvent(chat: event.chat));
       });
     } catch (e) {
       emit(ChatFailureState(failure: Failure(e.toString())));
@@ -74,24 +67,48 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       ChatGetAllChatEvent event, Emitter<ChatState> emit) async {
     try {
       final res = await _getAllChat(NoParams());
-      res.fold((failure) => emit(ChatFailureState(failure: failure)),
-          (chats) => emit(ChatRecievedState(chats: chats)));
+      res.fold((failure) => emit(ChatFailureState(failure: failure)), (schats) {
+        chats = schats;
+        emit(ChatRecievedState(chats: List.from(chats)));
+      });
     } catch (e) {
       emit(ChatFailureState(failure: Failure(e.toString())));
     }
   }
 
+  // FutureOr<void> _chatStartedListenEvent(
+  //     ChatStartedListenEvent event, Emitter<ChatState> emit) {
+  //   try {
+  //     final res = _listenOnChat(NoParams());
+  //     res.fold((failure) => emit(ChatFailureState(failure: failure)), (stream) {
+  //       stream.listen((_) {
+  //         add(ChatGetAllChatEvent());
+  //       });
+  //     });
+  //   } catch (e) {
+  //     emit(ChatFailureState(failure: Failure(e.toString())));
+  //   }
+  // }
+
   FutureOr<void> _chatStartedListenEvent(
       ChatStartedListenEvent event, Emitter<ChatState> emit) {
     try {
       final res = _listenOnChat(NoParams());
-      res.fold((failure) => emit(ChatFailureState(failure: failure)), (stream) {
-        stream.listen((_) {
-          add(ChatGetAllChatEvent());
+
+      res.fold((failure) => emit(ChatFailureState(failure: failure)),
+          (chatstream) {
+        chatstream.listen((chat) {
+          add(ChatRecievedEvent(chat: chat));
         });
       });
     } catch (e) {
-      emit(ChatFailureState(failure: Failure(e.toString())));
+      emit(ChatFailureState(failure: Failure()));
     }
+  }
+
+  FutureOr<void> _chatRecievedEvent(
+      ChatRecievedEvent event, Emitter<ChatState> emit) {
+    chats.add(event.chat);
+    emit(ChatRecievedState(chats: List.from(chats)));
   }
 }

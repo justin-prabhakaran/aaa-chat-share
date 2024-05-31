@@ -13,12 +13,16 @@ class ChatRecievedState extends ChatState {
   final List<Chat> chats;
 
   const ChatRecievedState({required this.chats});
+
+  @override
+  List<List<Chat>> get props => [chats];
 }
 
 class ChatFailureState extends ChatState {
   final Failure failure;
 
   const ChatFailureState({required this.failure});
+
+  @override
+  List<Failure> get props => [failure];
 }
-
-

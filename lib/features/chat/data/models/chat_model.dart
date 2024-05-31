@@ -1,20 +1,21 @@
+import 'dart:convert';
+
 import 'package:aaa_chat_share/features/chat/domain/entities/chat.dart';
+import 'package:flutter/foundation.dart';
 
 class ChatModel extends Chat {
-  ChatModel(
-      {required super.message,
-      required super.time,
-      required super.userName,
-      });
+  ChatModel({
+    required super.message,
+    required super.time,
+    required super.userName,
+  });
 
   ChatModel copyWith({
     String? message,
     DateTime? time,
     String? userName,
-    
   }) {
     return ChatModel(
-     
       message: message ?? this.message,
       time: time ?? this.time,
       userName: userName ?? this.userName,
@@ -25,7 +26,7 @@ class ChatModel extends Chat {
     return <String, dynamic>{
       'message': message,
       'time': time.millisecondsSinceEpoch,
-      'userName': userName,
+      'user_name': userName,
     };
   }
 
@@ -37,7 +38,15 @@ class ChatModel extends Chat {
     );
   }
 
+  String toJson() => json.encode(toMap());
+
+  factory ChatModel.fromJson(String source) =>
+      ChatModel.fromMap(json.decode(source) as Map<String, dynamic>);
   @override
   String toString() =>
       'Chat(message: $message, time: $time, userName: $userName)';
+
+  Chat toEntity() {
+    return Chat(message: message, time: time, userName: userName);
+  }
 }

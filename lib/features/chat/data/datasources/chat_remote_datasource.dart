@@ -1,18 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:aaa_chat_share/core/failure.dart';
 import 'package:aaa_chat_share/features/chat/data/models/chat_model.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:http/http.dart' as http;
 
 abstract class ChatRemoteDataSource {
-  Future<bool> sendChat(String message, String userName, DateTime time);
+  void sendChat(String message, String userName, DateTime time);
   Future<List<ChatModel>> getAllChat();
-  Stream<void> listonOnChat();
+  Stream<ChatModel> listonOnChat();
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
-  final StreamController<void> _streamController = StreamController<void>();
+  final StreamController<ChatModel> _streamController =
+      StreamController<ChatModel>();
   final io.Socket _socket;
 
   ChatRemoteDataSourceImpl({
@@ -30,26 +32,26 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
       _socket.connect();
     }
 
-    _socket.on('updatemessage', (_) {
-      _streamController.add(null);
+    _socket.on('message', (data) {
+      _streamController.add(ChatModel.fromJson(data));
     });
   }
 
-  @override
-  Future<bool> sendChat(String message, String userName, DateTime time) async {
-    final url = Uri.parse('http://localhost:1234/chat');
-    final headers = {"Accept": "*/*", "Content-Type": "application/json"};
-    final body = jsonEncode({
-      'message': message,
-      'user_name': userName,
-      'time': time.millisecondsSinceEpoch,
-    });
-    final res = await http.post(url, headers: headers, body: body);
-    if (res.statusCode == 200) {
-      return true;
-    }
-    return false;
-  }
+  // @override
+  // Future<bool> sendChat(String message, String userName, DateTime time) async {
+  //   final url = Uri.parse('http://localhost:1234/chat');
+  //   final headers = {"Accept": "*/*", "Content-Type": "application/json"};
+  //   final body = jsonEncode({
+  //     'message': message,
+  //     'user_name': userName,
+  //     'time': time.millisecondsSinceEpoch,
+  //   });
+  //   final res = await http.post(url, headers: headers, body: body);
+  //   if (res.statusCode == 200) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   @override
   Future<List<ChatModel>> getAllChat() async {
@@ -66,7 +68,13 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   @override
-  Stream<void> listonOnChat() {
+  Stream<ChatModel> listonOnChat() {
     return _streamController.stream;
+  }
+
+  @override
+  void sendChat(String message, String userName, DateTime time) {
+    _socket.emit('message',
+        ChatModel(message: message, userName: userName, time: time).toJson());
   }
 }
